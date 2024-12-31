@@ -44,8 +44,6 @@ The analysis covers multiple forecasting models, with a focus on both traditiona
 
 ## User Guide
 
-## User Guide
-
 The `current.csv` file must be downloaded and placed in the same directory as the scripts since the working directory is set to a relative path. The `PreProcessing.R` script is self-contained and should be run first because all the other scripts assume the data is preprocessed. 
 
 If you don't have the `current.csv` file, it can be downloaded from the [Federal Reserve Economic Data (FRED) database](https://www.stlouisfed.org/research/economists/mccracken/fred-databases). Make sure to select the "monthly" dataset before downloading.
