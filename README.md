@@ -1,6 +1,6 @@
 # Inflation Forecasting with ML
 
-This updated group project focuses on forecasting inflation using various time series techniques. The dataset is sourced from the Federal Reserve Bank of St. Louis and includes key economic indicators used for modeling inflation rates.
+This updated group project focuses on forecasting inflation using various time series techniques. The dataset is sourced from the Federal Reserve Bank of St. Louis, a gold standard for applied macroeconomics.
 
 > **Note:** The code is being updated to be more precise and efficient in terms of data processing and model implementation.
 
