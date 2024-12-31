@@ -6,7 +6,7 @@ This updated group project focuses on forecasting inflation using various time s
 
 The analysis covers multiple forecasting models, with a focus on both traditional and modern machine learning techniques. The key methods used include:
 
-AR(1) Model: A standard autoregressive model to capture inflation trends.
+**AR(1) Model**: A standard autoregressive model to capture inflation trends.
 
 Lasso Regression: A regularization technique to improve model accuracy by selecting key predictors.
 
