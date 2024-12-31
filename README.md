@@ -1,6 +1,6 @@
 # Inflation Forecasting with ML
 
-This updated group project focuses on forecasting inflation using various time series techniques. The dataset is sourced from the Federal Reserve Bank of St. Louis, a gold standard for applied macroeconomics.
+This updated university group project focuses on forecasting inflation using various time series techniques. The dataset (FRED-MD) is provided by the Federal Reserve Bank of St. Louis, a trusted authority in macroeconomic data.
 
 > **Note:** The code is being updated to be more precise and efficient in terms of data processing and model implementation.
 
