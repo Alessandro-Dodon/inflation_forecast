@@ -22,31 +22,31 @@ The analysis covers multiple forecasting models, with a focus on both traditiona
 
 ## Files
 
-### PreProcessing.R
+### `PreProcessing.R`
 - R script for data preparation, addressing autocorrelation issues, plotting time series graphs, removing missing values, and other essential preprocessing steps.
 
-### AR1.R
+### `AR1.R`
 - Uses the AR(1) model, a baseline gold standard, as the benchmark for evaluating more complex models.
 
-### Lasso.R
+### `Lasso.R`
 - Implements Lasso regression with regularization tuned through experimentation and inspired by referenced research.
 
-### Ridge.R
+### `Ridge.R`
 - Applies Ridge regression to tackle multicollinearity, with parameters guided by insights from research papers.
 
-### PCR.R
+### `PCR.R`
 - Performs Principal Component Regression (PCR), experimenting with different numbers of PCs to optimize performance.
 
-### VAR.R
+### `VAR.R`
 - Implements Vector Autoregression (VAR) models, including an application of PCA to address multicollinearity issues effectively.
 
-### RandomForest.R
+### `RandomForest.R`
 - Explores the use of Random Forests to capture non-linear relationships in the data.
 
-### Report.pdf
+### `Report.pdf`
 - A detailed report explaining the results, visualizations, and model comparisons.
 
-### current.csv
+### `current.csv`
 - Dataset used in the analysis, consisting of US monthly macroeconomic indicators from the Federal Reserve.
 
 ## User Guide
