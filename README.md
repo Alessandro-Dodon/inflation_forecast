@@ -2,6 +2,8 @@
 
 This updated group project focuses on forecasting inflation using various time series techniques. The dataset is sourced from the Federal Reserve Bank of St. Louis and includes key economic indicators used for modeling inflation rates.
 
+> **Note:** The code is being updated to be more precise and efficient in terms of data processing and model implementation.
+
 ## Methodology
 
 The analysis covers multiple forecasting models, with a focus on both traditional and modern machine learning techniques. The key methods used include:
@@ -49,8 +51,6 @@ The analysis covers multiple forecasting models, with a focus on both traditiona
 
 ## User Guide
 
-The `current.csv` file must be downloaded and placed in the same directory as the scripts since the working directory is set to a relative path. The `PreProcessing.R` script is self-contained and should be run first because all the other scripts assume the data is preprocessed. 
-
-If you don't have the `current.csv` file, it can be downloaded from the [Federal Reserve Economic Data (FRED) database](https://www.stlouisfed.org/research/economists/mccracken/fred-databases). Make sure to select the "monthly" dataset before downloading.
-
-If any required packages are missing, simply remove the `#` at the start of the `install.packages()` lines in the script to install them. Once the preprocessing is complete, you can run the other scripts, starting with `AR1.R` for model evaluation. Make sure that R is installed on your system, and ensure that the required libraries are installed before running the analysis.
+Download the `current.csv` file and place it in the same directory as the scripts. The working directory is set to a relative path. Start by running the `PreProcessing.R` script, as all other scripts depend on the preprocessed data.
+If you don't have the `current.csv` file, download it from the [Federal Reserve Economic Data (FRED) database](https://www.stlouisfed.org/research/economists/mccracken/fred-databases) (select the "monthly" dataset).
+If any required packages are missing, uncomment the `install.packages()` lines in the script to install them. Ensure that R is installed, and all libraries are available before running the analysis.
