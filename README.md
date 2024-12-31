@@ -54,3 +54,8 @@ The analysis covers multiple forecasting models, with a focus on both traditiona
 Download the `current.csv` file and place it in the same directory as the scripts. The working directory is set to a relative path. Start by running the `PreProcessing.R` script, as all other scripts depend on the preprocessed data.
 If you don't have the `current.csv` file, either download it from this repo or from the [Federal Reserve Economic Data (FRED) database](https://www.stlouisfed.org/research/economists/mccracken/fred-databases) (select the "monthly" dataset).
 If any required packages are missing, uncomment the `install.packages()` lines in the script to install them. Ensure that R is installed, and all libraries are available before running the analysis.
+
+## try2
+Download the `current.csv` file and place it in the same directory as the scripts. The working directory is set to a relative path. Start by running the `PreProcessing.R` script, as all other scripts depend on the preprocessed data.
+If you don't have the `current.csv` file, either download it from this repo or from the [Federal Reserve Economic Data (FRED) database](https://www.stlouisfed.org/research/economists/mccracken/fred-databases) (select the "monthly" dataset).
+If any required packages are missing, uncomment the `install.packages()` lines in the script to install them. Ensure that R is installed, and all libraries are available before running the analysis.
