@@ -38,10 +38,10 @@ The analysis covers multiple forecasting models, with a focus on both traditiona
 ### `VAR.R`
 - Implements Vector Autoregression (VAR) models, including an application of PCA to address multicollinearity issues effectively.
 
-### `RandomForest.R`
+### `RF.R`
 - Explores the use of Random Forests to capture non-linear relationships in the data.
 
-### `Report.pdf`
+### `Presentation.pdf`
 - A detailed report explaining the results, visualizations, and model comparisons.
 
 ### `current.csv`
