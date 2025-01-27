@@ -1,54 +1,57 @@
 # Inflation Forecasting with ML
 
-This updated university group project focuses on forecasting inflation using various time series techniques. The dataset (FRED-MD) is provided by the Federal Reserve Bank of St. Louis, a trusted authority in macroeconomic data.
+This updated university group project focuses on forecasting inflation using various time series techniques. The dataset (**FRED-MD**) is provided by the Federal Reserve Bank of St. Louis, a trusted authority in macroeconomic data.
 
 ## Methodology
 
-The analysis covers multiple forecasting models, with a focus on both traditional and modern machine learning techniques. The key methods used include:
-
-**AR(1) Model**: A standard autoregressive model to capture inflation trends.
-
-**Lasso Regression**: A regularization technique to improve model accuracy by selecting key predictors.
-
-**Ridge Regression**: Similar to Lasso but handles multicollinearity differently by shrinking coefficients.
-
-**Principal Component Regression (PCR)**: Reducing dimensionality in the dataset and using principal components for forecasting.
-
-**Vector Autoregression (VAR)**: A multivariate time series model to capture relationships between inflation and macroeconomic indicators.
-
-**Random Forest (RF)**: A machine learning technique that captures complex, non-linear patterns for forecasting.
+We combined traditional econometric models and machine learning techniques to forecast inflation. Key models include AR(1), Lasso, Ridge, Principal Component Regression (PCR), Vector Autoregression (VAR), and Random Forest (RF).
 
 ## Files
 
-### `PreProcessing.R`
-- R script for data preparation, addressing autocorrelation issues, plotting time series graphs, removing missing values, and other essential preprocessing steps.
+### **Scripts**
+- **`PreProcessing.R`**: Prepares data by handling missing values, autocorrelation, stationarity checks, and visualization.
+- **`AR1.R`**: Implements AR(1) as the benchmark model.
+- **`Lasso.R`**: Uses Lasso regression with regularization.
+- **`Ridge.R`**: Applies Ridge regression for multicollinearity.
+- **`PCR.R`**: Performs Principal Component Regression with varying numbers of PCs.
+- **`VAR.R`**: Fits Vector Autoregression models with PCA for multicollinearity.
+- **`RF.R`**: Explores Random Forest for non-linear patterns.
 
-### `AR1.R`
-- Uses the AR(1) model, a baseline gold standard, as the benchmark for evaluating more complex models.
+### **Documentation**
+- **`Presentation.pdf`**: A detailed report with methodology, results, and comparisons.
 
-### `Lasso.R`
-- Implements Lasso regression with regularization tuned through experimentation and inspired by referenced research.
+### **Dataset**
+- **`current.csv`**: Contains US monthly macroeconomic indicators from the Federal Reserve.
 
-### `Ridge.R`
-- Applies Ridge regression to tackle multicollinearity, with parameters guided by insights from research papers.
+---
 
-### `PCR.R`
-- Performs Principal Component Regression (PCR), experimenting with different numbers of PCs to optimize performance.
+## Results
 
-### `VAR.R`
-- Implements Vector Autoregression (VAR) models, including an application of PCA to address multicollinearity issues effectively.
+Below is an example output of the Lasso Regression model results:
 
-### `RF.R`
-- Explores the use of Random Forests to capture non-linear relationships in the data.
+![Lasso Results](LassoResults.png)  
+*Visualization of Lasso model coefficients and performance metrics.*
 
-### `Presentation.pdf`
-- A detailed report explaining the results, visualizations, and model comparisons.
-
-### `current.csv`
-- Dataset used in the analysis, consisting of US monthly macroeconomic indicators from the Federal Reserve.
+---
 
 ## User Guide
 
-Download the current.csv file and place it in the same directory as the scripts. The working directory is set to a relative path. Begin by running the PreProcessing.R script, as all other scripts depend on the preprocessed data. If you don’t have the current.csv file, you can either download it from this repository or directly from the [Federal Reserve Economic Data (FRED) database](https://www.stlouisfed.org/research/economists/mccracken/fred-databases) (choose the "monthly" dataset). 
-If any required packages are missing, simply uncomment the install.packages() lines in the script to install them. Make sure that R is installed on your machine.
-Additionally, please note that since the script generates numerous plots, they are typically saved in the same directory. The script automatically handles the saving process for you.
+1. **Setup**:
+   - Place the `current.csv` file in the same directory as the scripts.
+   - Ensure the working directory is set to the project folder.
+
+2. **Execution**:
+   - Run the `PreProcessing.R` script first, as all other scripts depend on the preprocessed data.
+   - Generated plots and metrics will be saved automatically in the same directory.
+
+3. **Packages**:
+   - If any R packages are missing, uncomment the `install.packages()` lines in each script to install them.
+
+4. **Dataset**:
+   - If the `current.csv` file is unavailable, download the monthly dataset from the [FRED-MD website](https://www.stlouisfed.org/research/economists/mccracken/fred-databases).
+
+---
+
+### Notes
+
+For any questions or contributions, feel free to open an issue in this repository. This project highlights our integration of econometrics and machine learning for inflation forecasting.
