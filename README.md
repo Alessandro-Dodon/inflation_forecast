@@ -15,8 +15,11 @@ I used a mix of traditional econometric models and modern machine learning techn
 ## Files
 
 **`PreProcessing.R`**: Prepares the dataset, handles missing values, checks stationarity, and visualizes time series.
+
 **`AR1.R`**: Implements the AR(1) model as a benchmark.
+
 **`Lasso.R`**: Fits a Lasso regression model with tuned regularization parameters.
+
 - **`Ridge.R`**: Applies Ridge regression to address multicollinearity.
 - **`PCR.R`**: Performs Principal Component Regression, optimizing the number of principal components.
 - **`VAR.R`**: Fits VAR models, optionally using PCA preprocessing.
