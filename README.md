@@ -20,12 +20,17 @@ I used a mix of traditional econometric models and modern machine learning techn
 
 **`Lasso.R`**: Fits a Lasso regression model with tuned regularization parameters.
 
-- **`Ridge.R`**: Applies Ridge regression to address multicollinearity.
-- **`PCR.R`**: Performs Principal Component Regression, optimizing the number of principal components.
-- **`VAR.R`**: Fits VAR models, optionally using PCA preprocessing.
-- **`RF.R`**: Uses Random Forest to model inflation trends.
-- **`Presentation.pdf`**: A report explaining the methodology, results, and model comparisons.
-- **`current.csv`**: Contains US monthly macroeconomic indicators from the Federal Reserve.
+**`Ridge.R`**: Applies Ridge regression following the same logic.
+
+**`PCR.R`**: Performs Principal Component Regression, optimizing the number of principal components.
+
+**`VAR.R`**: Fits VAR models, optionally using PCA preprocessing.
+
+**`RF.R`**: Uses Random Forest to model inflation trends.
+
+**`Presentation.pdf`**: A report explaining the methodology, results, and model comparisons.
+
+**`current.csv`**: Contains US monthly macroeconomic indicators from the Federal Reserve.
 
 
 ## Results
