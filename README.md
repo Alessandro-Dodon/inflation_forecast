@@ -28,7 +28,7 @@ I used a mix of traditional econometric models and modern machine learning techn
 
 **`RF.R`**: Uses Random Forest to model inflation trends.
 
-**`Presentation.pdf`**: A report explaining the methodology, results, and model comparisons.
+**`Presentation.pdf`**: Set of slides explaining the methodology, results, and model comparisons.
 
 **`current.csv`**: Contains US monthly macroeconomic indicators from the Federal Reserve.
 
