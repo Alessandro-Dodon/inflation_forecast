@@ -46,4 +46,4 @@ Below is a visualization of the Lasso Regression results from the analysis:
    - Uncomment the `install.packages()` lines in the scripts to install any missing R packages. The full list of required packages is provided in the `PreProcessing.R` script.
 
 4. **Dataset**:
-   - If `current.csv` is unavailable, download the monthly dataset from the [FRED-MD website](https://www.stlouisfed.org/research/economists/mccracken/fred-databases).
+   - If you prefer, download the monthly dataset `current.csv` from the [FRED-MD website](https://www.stlouisfed.org/research/economists/mccracken/fred-databases).
