@@ -33,9 +33,9 @@ I used a mix of traditional econometric models and modern machine learning techn
 **`current.csv`**: Contains US monthly macroeconomic indicators from the Federal Reserve.
 
 
-## Results
+## Results Example
 
-Below is a visualization of the Lasso Regression results from the analysis:
+Below is a visualization of the Lasso Regression results from the analysis (for more insights please visit the slides):
 
 ![Lasso Results](LassoResults.png)
 
