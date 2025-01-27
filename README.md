@@ -14,23 +14,23 @@ I used a mix of traditional econometric models and modern machine learning techn
 
 ## Files
 
-**`PreProcessing.R`**: Prepares the dataset, handles missing values, checks stationarity, and visualizes time series.
+**`PreProcessing.R`** Prepares the dataset, handles missing values, checks stationarity, and visualizes time series.
 
-**`AR1.R`**: Implements the AR(1) model as a benchmark.
+**`AR1.R`** Implements the AR(1) model as a benchmark.
 
-**`Lasso.R`**: Fits a Lasso regression model with tuned regularization parameters.
+**`Lasso.R`** Fits a Lasso regression model with tuned regularization parameters.
 
-**`Ridge.R`**: Applies Ridge regression following the same logic.
+**`Ridge.R`** Applies Ridge regression following the same logic.
 
-**`PCR.R`**: Performs Principal Component Regression, optimizing the number of principal components.
+**`PCR.R`** Performs Principal Component Regression, optimizing the number of principal components.
 
-**`VAR.R`**: Fits VAR models, optionally using PCA preprocessing.
+**`VAR.R`** Fits VAR models, optionally using PCA preprocessing.
 
-**`RF.R`**: Uses Random Forest to model inflation trends.
+**`RF.R`** Uses Random Forest to model inflation trends.
 
-**`Presentation.pdf`**: Set of slides explaining the methodology, results, and model comparisons.
+**`Presentation.pdf`** Set of slides explaining the methodology, results, and model comparisons.
 
-**`current.csv`**: Contains US monthly macroeconomic indicators from the Federal Reserve.
+**`current.csv`** Contains US monthly macroeconomic indicators from the Federal Reserve.
 
 
 ## Results Example
