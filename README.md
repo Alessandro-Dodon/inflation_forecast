@@ -4,21 +4,27 @@ This updated university group project focuses on forecasting inflation using var
 
 ## Methodology
 
-We combined traditional econometric models and machine learning techniques to forecast inflation. Key models include AR(1), Lasso, Ridge, Principal Component Regression (PCR), Vector Autoregression (VAR), and Random Forest (RF).
+I used a mix of traditional econometric models and modern machine learning techniques to forecast inflation. These include:
+
+- **AR(1) Model**: A baseline autoregressive model for inflation trends.
+- **Lasso and Ridge Regression**: Regularization techniques to select predictors and handle multicollinearity.
+- **Principal Component Regression (PCR)**: Dimensionality reduction for large datasets.
+- **Vector Autoregression (VAR)**: Captures relationships between inflation and other macroeconomic indicators.
+- **Random Forest (RF)**: Models non-linear patterns in the data.
 
 ## Files
 
 ### **Scripts**
-- **`PreProcessing.R`**: Prepares data by handling missing values, autocorrelation, stationarity checks, and visualization.
-- **`AR1.R`**: Implements AR(1) as the benchmark model.
-- **`Lasso.R`**: Uses Lasso regression with regularization.
-- **`Ridge.R`**: Applies Ridge regression for multicollinearity.
-- **`PCR.R`**: Performs Principal Component Regression with varying numbers of PCs.
-- **`VAR.R`**: Fits Vector Autoregression models with PCA for multicollinearity.
-- **`RF.R`**: Explores Random Forest for non-linear patterns.
+- **`PreProcessing.R`**: Prepares the dataset, handles missing values, checks stationarity, and visualizes time series.
+- **`AR1.R`**: Implements the AR(1) model as a benchmark.
+- **`Lasso.R`**: Fits a Lasso regression model with tuned regularization parameters.
+- **`Ridge.R`**: Applies Ridge regression to address multicollinearity.
+- **`PCR.R`**: Performs Principal Component Regression, optimizing the number of principal components.
+- **`VAR.R`**: Fits VAR models, optionally using PCA preprocessing.
+- **`RF.R`**: Uses Random Forest to model inflation trends.
 
 ### **Documentation**
-- **`Presentation.pdf`**: A detailed report with methodology, results, and comparisons.
+- **`Presentation.pdf`**: A report explaining the methodology, results, and model comparisons.
 
 ### **Dataset**
 - **`current.csv`**: Contains US monthly macroeconomic indicators from the Federal Reserve.
@@ -27,31 +33,28 @@ We combined traditional econometric models and machine learning techniques to fo
 
 ## Results
 
-Below is an example output of the Lasso Regression model results:
+Below is a visualization of the Lasso Regression results from the analysis:
 
-![Lasso Results](LassoResults.png)  
-*Visualization of Lasso model coefficients and performance metrics.*
+![Lasso Results](LassoResults.png)
 
 ---
 
 ## User Guide
 
 1. **Setup**:
-   - Place the `current.csv` file in the same directory as the scripts.
+   - Place `current.csv` in the same directory as the scripts.
    - Ensure the working directory is set to the project folder.
 
 2. **Execution**:
-   - Run the `PreProcessing.R` script first, as all other scripts depend on the preprocessed data.
-   - Generated plots and metrics will be saved automatically in the same directory.
+   - Start by running `PreProcessing.R`, as all other scripts depend on the preprocessed data.
+   - Metrics are printed in the console, and plots are saved as PDF files in the same directory.
 
 3. **Packages**:
-   - If any R packages are missing, uncomment the `install.packages()` lines in each script to install them.
+   - Uncomment the `install.packages()` lines in the scripts to install any missing R packages. The full list of required packages is provided in the `PreProcessing.R` script.
 
 4. **Dataset**:
-   - If the `current.csv` file is unavailable, download the monthly dataset from the [FRED-MD website](https://www.stlouisfed.org/research/economists/mccracken/fred-databases).
+   - If `current.csv` is unavailable, download the monthly dataset from the [FRED-MD website](https://www.stlouisfed.org/research/economists/mccracken/fred-databases).
 
 ---
 
-### Notes
-
-For any questions or contributions, feel free to open an issue in this repository. This project highlights our integration of econometrics and machine learning for inflation forecasting.
+For questions or contributions, feel free to open an issue in this repository.
