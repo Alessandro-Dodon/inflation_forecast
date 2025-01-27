@@ -1,6 +1,6 @@
 # Inflation Forecasting with ML
 
-This updated group project focuses on forecasting inflation using various time series techniques. The dataset is sourced from the Federal Reserve Bank of St. Louis and includes key economic indicators used for modeling inflation rates.
+This updated university group project focuses on forecasting inflation using various time series techniques. The dataset (FRED-MD) is provided by the Federal Reserve Bank of St. Louis, a trusted authority in macroeconomic data.
 
 > **Note:** The code is being updated to be more precise and efficient in terms of data processing and model implementation.
 
@@ -51,6 +51,6 @@ The analysis covers multiple forecasting models, with a focus on both traditiona
 
 ## User Guide
 
-Download the `current.csv` file and place it in the same directory as the scripts. The working directory is set to a relative path. Start by running the `PreProcessing.R` script, as all other scripts depend on the preprocessed data.
-If you don't have the `current.csv` file, either download it from this repo or from the [Federal Reserve Economic Data (FRED) database](https://www.stlouisfed.org/research/economists/mccracken/fred-databases) (select the "monthly" dataset).
-If any required packages are missing, uncomment the `install.packages()` lines in the script to install them. Ensure that R is installed, and all libraries are available before running the analysis.
+Download the current.csv file and place it in the same directory as the scripts. The working directory is set to a relative path. Begin by running the PreProcessing.R script, as all other scripts depend on the preprocessed data. If you don’t have the current.csv file, you can either download it from this repository or directly from the [Federal Reserve Economic Data (FRED) database](https://www.stlouisfed.org/research/economists/mccracken/fred-databases) (choose the "monthly" dataset). 
+If any required packages are missing, simply uncomment the install.packages() lines in the script to install them. Make sure that R is installed on your machine.
+Additionally, please note that since the script generates numerous plots, they are typically saved in the same directory. The script automatically handles the saving process for you.
