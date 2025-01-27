@@ -52,7 +52,3 @@ Below is a visualization of the Lasso Regression results from the analysis:
 
 4. **Dataset**:
    - If `current.csv` is unavailable, download the monthly dataset from the [FRED-MD website](https://www.stlouisfed.org/research/economists/mccracken/fred-databases).
-
----
-
-For questions or contributions, feel free to open an issue in this repository.
