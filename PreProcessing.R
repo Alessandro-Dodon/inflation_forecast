@@ -1,4 +1,51 @@
 ################################################################################
+# Script Overview: Pre-Processing
+################################################################################
+
+# Author: Alessandro Dodon
+# Last Update: 01-25-2025
+# Description:
+# This script processes macroeconomic data with a focus on inflation (CPIULFSL) 
+# as the target variable. The analysis includes data cleaning, transformation, 
+# visualization, and eigenvalue analysis for future dimensionality reduction. 
+# Key plots and outputs are saved as high-resolution PDFs for reproducibility.
+
+# Requirements:
+# - This script requires R and the listed packages to be installed.
+# - Uncomment the relevant install.packages commands in the "Prepare Packages" 
+#   section to install missing packages.
+# - Ensure the dataset (current.csv) is located in the same directory as this script.
+
+# Major Sections:
+# 1. Prepare Packages: Loads all required libraries for analysis.
+# 2. Load Data: Reads and preprocesses the dataset using the fredmd function.
+# 3. Data Cleaning: Handles missing values, removes COVID-19 data, and smooths 
+#    remaining missing values using a simple moving average (SMA).
+# 4. Variable Splitting: Splits the dataset into predictors (X) and target (Y) 
+#    for training and testing.
+# 5. Variable of Interest (CPIULFSL): Visualizes inflation data through time 
+#    series and autocorrelation plots.
+# 6. Visualization of All Variables: Generates and saves plots for all variables, 
+#    including time series and autocorrelation.
+# 7. Covariance Matrix: Computes the variance-covariance matrix and visualizes it 
+#    using a heatmap created with pheatmap.
+# 8. Eigenvalue Analysis: Performs eigenvalue decomposition of the covariance 
+#    matrix, supported by scree plots and eigenvalue ratio plots.
+
+# Outputs:
+# - High-resolution visualizations, including heatmaps, time series, autocorrelation, 
+#   scree plots, and eigenvalue ratio plots, are saved in the working directory as PDFs.
+# - Cleaned dataset ready for the analysis already split into X and Y and Train and Test.
+
+# Notes:
+# - This script must be run sequentially.
+# - This script must be run first as it performs all preprocessing and prepares 
+#   the cleaned data required for further analysis. The subsequent scripts, which 
+#   contain forecasting algorithms using different models, can be executed in any order.
+# - Additional clarifications are provided throughout the script with # NOTE: comments.
+#   For a better explanation, please visit the slides.
+
+################################################################################
 # Prepare packages
 ################################################################################
 
@@ -16,6 +63,8 @@
 #install.packages("glmnet")
 #install.packages("randomForest")
 #install.packages("vars")
+#install.packages("pls")
+#install.packages("pheatmap")
 
 # Install fbi package from github
 #devtools::install_github("cykbennie/fbi")
@@ -24,6 +73,8 @@
 # Suppress warnings and messages
 suppressWarnings(suppressMessages({
   
+  library(pls)
+  library(stats)
   library(pls)
   library(glmnet)
   library(dplyr)
@@ -40,11 +91,12 @@ suppressWarnings(suppressMessages({
   library(imputeTS)
   library(randomForest)
   library(vars)
+  library(pheatmap)
   
 }))
 
 ################################################################################
-# Start by loading the monthly data using the fredmd function (this function correctly treats the autocorrelation of each time series properly)
+# Start by loading the monthly data and defining the fredmd function 
 ################################################################################
 
 # Define the fredmd function
@@ -215,165 +267,20 @@ summary(transformed_data)
 str(original_data)
 summary(original_data)
 
+# NOTE:
+# The fredmd function handles the autocorrelation of each time series appropriately.
+# If the fbi package is installed, you can use this function directly without redefining it.
+# Using the function directly allows you to clearly observe the applied transformations.
+
 ################################################################################
 # Describing variables in the dataset
 ################################################################################
 
-data(fredmd_description) # Click on fredmd_description <Promise> on the Environment 
+data(fredmd_description) 
 print(fredmd_description)
 
 ################################################################################
-# View variable of interest "CPIULFSL"
-################################################################################
-
-# Extract the full column for CPIULFSL
-cpi_column <- dataset$CPIULFSL
-
-# View the first few values to verify
-head(cpi_column)
-
-################################################################################
-# Plotting before and after each time series
-################################################################################
-
-# Function to create a plot for a single variable
-plot_variable <- function(data, var_name, title_suffix) {
-  # Use backticks to handle special characters in column names
-  ggplot(data, aes_string(x = "date", y = paste0("`", var_name, "`"))) +
-    geom_line() +
-    labs(title = paste("Plot of", var_name, title_suffix), x = "Date", y = var_name) +
-    theme_minimal()
-}
-
-# Function to plot and save all variables except date
-plot_all_variables <- function(data, title_suffix, output_dir) {
-  vars <- names(data)[-1]  # Exclude the first column (date)
-  
-  for (var in vars) {
-    p <- plot_variable(data, var, title_suffix)
-    print(p)  # Print the plot to the console
-    
-    # Save the plot as a file
-    ggsave(filename = paste0(output_dir, "/", gsub(" ", "_", var), "_", title_suffix, ".png"), plot = p)
-  }
-}
-
-# Set your output directory
-output_dir <- "plots"
-dir.create(output_dir, showWarnings = FALSE)
-
-# Plot and save for original data
-plot_all_variables(original_data, "Original Data", output_dir)
-
-# Plot and save for transformed data
-plot_all_variables(transformed_data, "Transformed Data", output_dir)
-
-################################################################################
-# Plotting before and after the autocorrelation of each time series
-################################################################################
-
-# Function to create an autocorrelation plot for a single variable
-plot_autocorrelation <- function(data, var_name, title_suffix) {
-  # Extract the variable data and remove NA values
-  var_data <- na.omit(data[[var_name]])
-  
-  # Create an autocorrelation plot
-  autocorr <- acf(var_data, plot = FALSE)
-  
-  # Convert to a data frame for ggplot2
-  acf_df <- data.frame(Lag = autocorr$lag, Autocorrelation = autocorr$acf)
-  
-  # Calculate the confidence interval
-  ci <- qnorm((1 + 0.95) / 2) / sqrt(length(var_data))
-  
-  # Plot using ggplot2
-  ggplot(acf_df, aes(x = Lag, y = Autocorrelation)) +
-    geom_hline(yintercept = c(-ci, ci), linetype = "dashed", color = "red") +
-    geom_segment(aes(xend = Lag, yend = 0), color = "black") +
-    geom_point(color = "black") +
-    labs(title = paste("Autocorrelation of", var_name, title_suffix), x = "Lag", y = "Autocorrelation") +
-    theme_minimal()
-}
-
-# Function to plot and save all autocorrelation plots except date
-plot_all_autocorrelations <- function(data, title_suffix, output_dir) {
-  vars <- names(data)[-1]  # Exclude the first column (date)
-  
-  for (var in vars) {
-    p <- plot_autocorrelation(data, var, title_suffix)
-    print(p)  # Print the plot to the console
-    
-    # Save the plot as a file
-    ggsave(filename = paste0(output_dir, "/", gsub(" ", "_", var), "_Autocorrelation_", title_suffix, ".png"), plot = p)
-  }
-}
-
-# Set your output directory
-output_dir <- "autocorrelation_plots"
-dir.create(output_dir, showWarnings = FALSE)
-
-# Plot and save autocorrelation plots for original data
-plot_all_autocorrelations(original_data, "Original Data", output_dir)
-
-# Plot and save autocorrelation plots for transformed data
-plot_all_autocorrelations(transformed_data, "Transformed Data", output_dir)
-
-################################################################################
-# Function to create a plot for a single variable
-################################################################################
-
-plot_variable <- function(data, var_name, title_suffix) {
-  # Use backticks to handle special characters in column names
-  ggplot(data, aes_string(x = "date", y = paste0("`", var_name, "`"))) +
-    geom_line() +
-    labs(title = paste("Plot of", var_name, title_suffix), x = "Date", y = var_name) +
-    theme_minimal()
-}
-
-# Function to create an autocorrelation plot for a single variable
-plot_autocorrelation <- function(data, var_name, title_suffix) {
-  # Extract the variable data and remove NA values
-  var_data <- na.omit(data[[var_name]])
-  
-  # Create an autocorrelation plot
-  autocorr <- acf(var_data, plot = FALSE)
-  
-  # Convert to a data frame for ggplot2
-  acf_df <- data.frame(Lag = autocorr$lag, Autocorrelation = autocorr$acf)
-  
-  # Calculate the confidence interval
-  ci <- qnorm((1 + 0.95) / 2) / sqrt(length(var_data))
-  
-  # Plot using ggplot2
-  ggplot(acf_df, aes(x = Lag, y = Autocorrelation)) +
-    geom_hline(yintercept = c(-ci, ci), linetype = "dashed", color = "red") +
-    geom_segment(aes(xend = Lag, yend = 0), color = "black") +
-    geom_point(color = "black") +
-    labs(title = paste("Autocorrelation of", var_name, title_suffix), x = "Lag", y = "Autocorrelation") +
-    theme_minimal()
-}
-
-# Create and save the plots for CPIULFSL
-output_pdf <- "CPIULFSL_plots.pdf"
-pdf(output_pdf, width = 10, height = 8)
-
-# Plot and save the original time series plot
-p1 <- plot_variable(original_data, "CPIULFSL", "Original Data")
-print(p1)
-
-# Plot and save the transformed time series plot
-p2 <- plot_variable(transformed_data, "CPIULFSL", "Transformed Data")
-print(p2)
-
-# Plot and save the autocorrelation plot of the transformed data
-p3 <- plot_autocorrelation(transformed_data, "CPIULFSL", "Transformed Data")
-print(p3)
-
-# Close the PDF device
-dev.off()
-
-################################################################################
-# Original data inspection (check for missing values)
+# Original data inspection (checking for missing values)
 ################################################################################
 
 # Identify rows with NA values
@@ -396,6 +303,11 @@ dates_with_na_transformed_data <- transformed_data$date[na_rows_transformed_data
 # Print the dates with NA values
 print("Dates with NA values for transformed data:")
 print(dates_with_na_transformed_data)
+
+# NOTE:
+# The fbi package provides functions for handling missing values, but I handle 
+# this step manually. Similarly, while the package includes functions for removing 
+# outliers, I skip this step and instead focus on excluding the COVID period.
 
 ################################################################################
 # Counting missing values 
@@ -438,7 +350,7 @@ print("Details of NAs in transformed data:")
 print(na_details_transformed_data)
 
 ################################################################################
-# Cleaning dataset (we start from 1960-01-01, end in 2024-01-01 and take out variables that have too many nas in a row)
+# Cleaning dataset 
 ################################################################################
 
 # Convert the fredmd data frame to a regular data frame if not already done
@@ -456,6 +368,10 @@ transformed_data_cleaned <- transformed_data_cleaned[, !names(transformed_data_c
 
 # Display the first few rows of the cleaned data
 head(transformed_data_cleaned)
+
+# NOTE:
+# Start from 1960-01-01, end in 2024-01-01 and take out variables that have too 
+# many missing values in a row.
 
 ################################################################################
 # Missing values for data transformed cleaned
@@ -494,7 +410,11 @@ for (col in names(transformed_data_cleaned)) {
 # Display the cleaned dataframe
 print(transformed_data_cleaned)
 
-# NOTE: The SMA method calculates the average of the previous 'n' values in a series and uses this average to replace NA values. This helps in smoothing the data by filling in missing values based on the surrounding data points, thereby maintaining the overall trend and continuity of the data.
+# NOTE: 
+# The SMA method calculates the average of the previous 'n' values in a series and 
+# uses this average to replace NA values. This helps in smoothing the data by filling 
+# in missing values based on the surrounding data points, thereby maintaining the 
+# overall trend and continuity of the data.
 
 ################################################################################
 # Re-check missing values for data transformed cleaned
@@ -503,135 +423,6 @@ na_details_transformed_data_cleaned <- count_and_locate_nas(transformed_data_cle
 
 print("Details of NAs in transformed data cleaned:")
 print(na_details_transformed_data_cleaned)
-
-################################################################################
-# Covariance and Correlation (standardizing the data)
-################################################################################
-
-# Standardizing the data (mean = 0, sd = 1)
-standardized_transformed_data_cleaned <- scale(transformed_data_cleaned[-1])  # First column is date
-
-# Compute the correlation and covariance matrices using complete observations
-correlation_matrix <- cor(standardized_transformed_data_cleaned, use = "complete.obs")
-covariance_matrix <- cov(standardized_transformed_data_cleaned, use = "complete.obs")
-
-# Store the results in new data frames
-covariance_matrix <- as.data.frame(covariance_matrix)
-correlation_matrix <- as.data.frame(correlation_matrix)
-
-# Heatmaps 
-# Ensure the matrices have appropriate row and column names
-rownames(covariance_matrix) <- colnames(covariance_matrix) 
-rownames(correlation_matrix) <- colnames(correlation_matrix) 
-
-# Convert matrices to long format for ggplot2
-correlation_long <- reshape2::melt(as.matrix(correlation_matrix), varnames = c("Variable1", "Variable2"), value.name = "Correlation")
-covariance_long <- reshape2::melt(as.matrix(covariance_matrix), varnames = c("Variable1", "Variable2"), value.name = "Covariance")
-
-# Heatmap for the Correlation Matrix
-ggplot(correlation_long, aes(Variable1, Variable2, fill = Correlation)) +
-  geom_tile(color = "white") +
-  scale_fill_viridis(option = "plasma", direction = -1, limits = c(-1, 1)) +
-  theme_minimal() +
-  theme(axis.text.x = element_blank(),
-        axis.text.y = element_blank(),
-        axis.ticks = element_blank(),
-        axis.title = element_blank()) +
-  labs(title = "Correlation Matrix Heatmap (standardized)")
-
-# Create the heatmap plot for the Covariance Matrix
-cov_heatmap <- ggplot(covariance_long, aes(Variable1, Variable2, fill = Covariance)) +
-  geom_tile(color = "white") +
-  scale_fill_viridis(option = "plasma", direction = -1) +
-  theme_minimal() +
-  theme(axis.text.x = element_blank(),
-        axis.text.y = element_blank(),
-        axis.ticks = element_blank(),
-        axis.title = element_blank()) +
-  labs(title = "Covariance Matrix Heatmap of FRED_MD Dataset (Standardized)")
-
-# Save the plot as a high-resolution PDF
-ggsave("covariance_matrix_heatmap.pdf", plot = cov_heatmap, width = 10, height = 8, dpi = 300, units = "in")
-
-################################################################################
-# Eigenvalues and eigenvectors for PCA
-################################################################################
-
-# Compute eigenvalues and eigenvectors for the correlation matrix
-eigen_corr <- eigen(correlation_matrix)
-eigenvalues_corr <- eigen_corr$values
-eigenvectors_corr <- eigen_corr$vectors
-
-# Compute eigenvalues and eigenvectors for the covariance matrix
-eigen_cov <- eigen(covariance_matrix)
-eigenvalues_cov <- eigen_cov$values
-eigenvectors_cov <- eigen_cov$vectors
-
-# Optionally, print the results to see them
-print("Eigenvalues of the Correlation Matrix:")
-print(eigenvalues_corr)
-print("Eigenvectors of the Correlation Matrix:")
-print(eigenvectors_corr)
-
-print("Eigenvalues of the Covariance Matrix:")
-print(eigenvalues_cov)
-print("Eigenvectors of the Covariance Matrix:")
-print(eigenvectors_cov)
-
-# Visualize the eigenvalues (scree plot) to determine how many components are useful
-# Plot for the correlation matrix eigenvalues
-ggplot(data.frame(Eigenvalue = eigenvalues_corr, Component = seq_along(eigenvalues_corr)), aes(x = Component, y = Eigenvalue)) +
-  geom_line() +
-  geom_point() +
-  labs(title = "Scree Plot of Eigenvalues (Correlation Matrix standardized)", x = "Component", y = "Eigenvalue") +
-  theme_minimal()
-
-# Plot for the covariance matrix eigenvalues
-ggplot(data.frame(Eigenvalue = eigenvalues_cov, Component = seq_along(eigenvalues_cov)), aes(x = Component, y = Eigenvalue)) +
-  geom_line() +
-  geom_point() +
-  labs(title = "Scree Plot of Eigenvalues (Covariance Matrix standardized)", x = "Component", y = "Eigenvalue") +
-  theme_minimal()
-
-################################################################################
-# Ratio plots 
-################################################################################
-
-# Number of eigenvalues
-num_eigenvalues <- length(eigenvalues_corr)
-
-# Create a loop for eigenvalues correlation difference
-eigen_corr_difference <- numeric(num_eigenvalues - 1)  # One less than the number of eigenvalues
-
-for (i in 1:(num_eigenvalues - 1)) {
-  eigen_corr_difference[i] = eigenvalues_corr[i] / eigenvalues_corr[i + 1]
-}
-
-# Visualize the plot for correlation matrix eigenvalue ratios
-ggplot(data.frame(Eigenvalues_ratios = eigen_corr_difference, Component = 1:(num_eigenvalues - 1)), 
-       aes(x = Component, y = Eigenvalues_ratios)) +
-  geom_line() +
-  geom_point() +
-  labs(title = "Scree Plot of Eigenvalues' Ratios (Correlation Matrix)", x = "Component", y = "Eigenvalues Ratios") +
-  theme_minimal()
-
-# Create a loop for eigenvalues covariance difference
-eigen_cov_difference <- numeric(num_eigenvalues - 1)
-
-for (i in 1:(num_eigenvalues - 1)) {
-  eigen_cov_difference[i] = eigenvalues_cov[i] / eigenvalues_cov[i + 1]
-}
-
-# Visualize the plot for covariance matrix eigenvalue ratios
-scree_plot <- ggplot(data.frame(Eigenvalues_ratios = eigen_cov_difference, Component = 1:(num_eigenvalues - 1)), 
-                     aes(x = Component, y = Eigenvalues_ratios)) +
-  geom_line() +
-  geom_point() +
-  labs(title = "Eigenvalues' Ratios (Covariance Matrix)", x = "Component", y = "Eigenvalues Ratios") +
-  theme_minimal()
-
-# Save the plot as a high-resolution PDF
-ggsave("plot_eigenvalues_ratios.pdf", plot = scree_plot, width = 10, height = 8, dpi = 300, units = "in")
 
 ################################################################################
 # Take COVID-19 years out
@@ -644,27 +435,303 @@ transformed_data_cleaned_no_COVID <- transformed_data_cleaned[as.Date(transforme
 head(transformed_data_cleaned_no_COVID)
 
 ################################################################################
-# Holdout method for splitting data 
+# Lagging and Splitting the Data
 ################################################################################
 
-# Define the split date (we use 70%)
+# Define X (predictors, past values) and Y (target, future values) with the date column retained
+X_before_splitting <- transformed_data_cleaned_no_COVID[-nrow(transformed_data_cleaned_no_COVID), ]  # Remove last row for X (past values)
+Y_before_splitting <- transformed_data_cleaned_no_COVID[-1, c("date", "CPIULFSL")]  # Remove first row for Y (future values), keeping date
+
+################################################################################
+# Holdout Method for Splitting Data
+################################################################################
+
+# Define the split date (we use around 70%)
 split_date <- as.Date("2000-01-01")
 
-# Split the data
-train_data_holdout <- transformed_data_cleaned_no_COVID[transformed_data_cleaned_no_COVID$date < split_date, ]
-test_data_holdout <- transformed_data_cleaned_no_COVID[transformed_data_cleaned_no_COVID$date >= split_date, ]
+# Split the data based on the date
+train_indices <- X_before_splitting$date < split_date
+test_indices <- X_before_splitting$date >= split_date
 
+# Split X and Y into train and test sets (date column still included for both X and Y)
+X_train_with_date <- X_before_splitting[train_indices, ]
+Y_train_with_date <- Y_before_splitting[train_indices, ]
+
+X_test_with_date <- X_before_splitting[test_indices, ]
+Y_test_with_date <- Y_before_splitting[test_indices, ]
+
+# Remove the date column after splitting for X and Y
+X_train <- X_train_with_date[, -1]  # Remove the date column
+Y_train <- Y_train_with_date[, "CPIULFSL"]
+
+X_test <- X_test_with_date[, -1]  # Remove the date column
+Y_test <- Y_test_with_date[, "CPIULFSL"]
+
+################################################################################
 # Verify the split
-cat("Training Data Range:\n")
-print(range(train_data_holdout$date))
+################################################################################
 
-cat("\nTest Data Range:\n")
-print(range(test_data_holdout$date))
+# Check the dimensions of the splits (X) and (Y)
+cat("Training Data Date Range (X):\n")
+print(range(X_train_with_date$date))
 
-# Check the dimensions of the split data
+cat("\nTest Data Date Range (X):\n")
+print(range(X_test_with_date$date))
+
+cat("Training Data Date Range (Y):\n")
+print(range(Y_train_with_date$date))
+
+cat("\nTest Data Date Range (Y):\n")
+print(range(Y_test_with_date$date))
+
+# Check the dimensions of the splits (X) and (Y)
 cat("\nTraining Data Dimensions:\n")
-print(dim(train_data_holdout))
+print(dim(X_train))
+cat(length(Y_train), "\n")  # Check length of Y_train
 
 cat("\nTest Data Dimensions:\n")
-print(dim(test_data_holdout))
+print(dim(X_test))
+cat(length(Y_test), "\n")  # Check length of Y_test
+
+################################################################################
+# View variable of interest (CPIULFSL, target inflation variable)
+################################################################################
+
+# Extract the full column for CPIULFSL
+cpi_column <- dataset$CPIULFSL
+
+# View the first few values to verify
+head(cpi_column)
+
+# Print details 
+print(fredmd_description[120,])
+
+################################################################################
+# Function to create a plot for variable of interest (CPIULFSL)
+################################################################################
+
+plot_variable <- function(data, var_name, title_suffix) {
+  # Use backticks to handle special characters in column names
+  ggplot(data, aes_string(x = "date", y = paste0("`", var_name, "`"))) +
+    geom_line() +
+    labs(title = paste("Plot of", var_name, title_suffix), x = "Date", y = var_name) +
+    theme_light() +
+    theme(panel.border = element_blank(),  # Remove outside borders
+          plot.background = element_blank(),  # Remove grey background
+          panel.background = element_blank())
+}
+
+# Function to create an autocorrelation plot for a single variable
+plot_autocorrelation <- function(data, var_name, title_suffix, remove_first_lag = FALSE) {
+  # Extract the variable data and remove NA values
+  var_data <- na.omit(data[[var_name]])
+  
+  # Create an autocorrelation plot
+  autocorr <- acf(var_data, lag.max = 30, plot = FALSE)  # Use first 30 lags
+  if (remove_first_lag) {
+    acf_df <- data.frame(Lag = autocorr$lag[-1], Autocorrelation = autocorr$acf[-1])  # Remove first lag
+    title_suffix <- paste(title_suffix, "(First Lag Removed)")  # Proper title formatting
+  } else {
+    acf_df <- data.frame(Lag = autocorr$lag, Autocorrelation = autocorr$acf)
+  }
+  
+  # Calculate the confidence interval
+  ci <- qnorm((1 + 0.95) / 2) / sqrt(length(var_data))
+  
+  # Plot using ggplot2
+  ggplot(acf_df, aes(x = Lag, y = Autocorrelation)) +
+    geom_hline(yintercept = c(-ci, ci), linetype = "dashed", color = "red") +
+    geom_segment(aes(xend = Lag, yend = 0), color = "black") +
+    geom_point(color = "black") +
+    labs(title = paste("Autocorrelation of", var_name, title_suffix), x = "Lag", y = "Autocorrelation") +
+    theme_light() +
+    theme(panel.border = element_blank(),  # Remove outside borders
+          plot.background = element_blank(),  # Remove grey background
+          panel.background = element_blank())
+}
+
+################################################################################
+# Plotting for variable of interest (CPIULFSL)
+################################################################################
+
+output_pdf <- "inflation_plots.pdf"
+pdf(output_pdf, width = 10, height = 8)
+
+suppressWarnings({
+  # Plot time series for CPIULFSL (original data)
+  original_time_series <- plot_variable(original_data, "CPIULFSL", "Original Data")
+  print(original_time_series)
+  
+  # Plot autocorrelation for CPIULFSL (original data)
+  original_autocorrelation <- plot_autocorrelation(original_data, "CPIULFSL", "Original Data", remove_first_lag = FALSE)
+  print(original_autocorrelation)
+  
+  # Plot time series for CPIULFSL (transformed data)
+  transformed_time_series <- plot_variable(transformed_data, "CPIULFSL", "Transformed Data")
+  print(transformed_time_series)
+  
+  # Plot autocorrelation for CPIULFSL (transformed data) with first lag removed
+  transformed_autocorrelation <- plot_autocorrelation(transformed_data, "CPIULFSL", "Transformed Data", remove_first_lag = TRUE)
+  print(transformed_autocorrelation)
+})
+
+dev.off()  # Close the PDF device
+
+################################################################################
+# Plotting before and after ALL time series into a single PDF
+################################################################################
+
+# Function to plot all variables into a single PDF
+plot_all_variables_pdf <- function(data, title_suffix, output_pdf) {
+  pdf(output_pdf, width = 10, height = 8)
+  vars <- names(data)[-1]  # Exclude the first column (date)
+  
+  for (var in vars) {
+    suppressWarnings({
+      p <- plot_variable(data, var, title_suffix)
+      print(p)  # Print each plot to the PDF
+    })
+  }
+  dev.off()  # Close the PDF device
+}
+
+# Set your output directory
+output_dir <- "time_series_plots"
+dir.create(output_dir, showWarnings = FALSE)
+
+# Plot and save all variables into a single PDF for original data
+plot_all_variables_pdf(original_data, "Original Data", file.path(output_dir, "time_series_original.pdf"))
+
+# Plot and save all variables into a single PDF for transformed data
+plot_all_variables_pdf(transformed_data, "Transformed Data", file.path(output_dir, "time_series_transformed.pdf"))
+
+################################################################################
+# Plotting before and after the autocorrelation of ALL time series into a single PDF
+################################################################################
+
+# Function to plot all autocorrelations into a single PDF
+plot_all_autocorrelations_pdf <- function(data, title_suffix, output_pdf, remove_first_lag = FALSE) {
+  pdf(output_pdf, width = 10, height = 8)
+  vars <- names(data)[-1]  # Exclude the first column (date)
+  
+  for (var in vars) {
+    suppressWarnings({
+      p <- plot_autocorrelation(data, var, title_suffix, remove_first_lag)
+      print(p)  # Print each plot to the PDF
+    })
+  }
+  dev.off()  # Close the PDF device
+}
+
+# Set your output directory
+output_dir <- "autocorrelation_plots"
+dir.create(output_dir, showWarnings = FALSE)
+
+# Plot and save all autocorrelation plots into a single PDF for original data
+plot_all_autocorrelations_pdf(original_data, "Original Data", file.path(output_dir, "autocorrelation_original.pdf"), remove_first_lag = FALSE)
+
+# Plot and save all autocorrelation plots into a single PDF for transformed data
+plot_all_autocorrelations_pdf(transformed_data, "Transformed Data", file.path(output_dir, "autocorrelation_transformed.pdf"), remove_first_lag = TRUE)
+
+# NOTE:
+# I plot original vs transformed data to do a visual check, seeing if the
+# transformation works well, considering the variable of interest first, then 
+# all the variables in the dataset, using the first 30 lags for ACF. The rest of
+# the analysis will use the dataset with no missing values, the COVID period 
+# removed, and only 121 variables. I prefer to save the plots in PDF files as this 
+# is much quicker than plotting and displaying each one in R.
+
+################################################################################
+# Covariance Matrix (Standardized Data)
+################################################################################
+
+# Standardize the data (mean = 0, SD = 1)
+standardized_data <- scale(transformed_data_cleaned_no_COVID[-1])  # Exclude the 'date' column
+
+# Compute the covariance matrix using complete observations
+covariance_matrix <- cov(standardized_data, use = "complete.obs")
+
+# Create the heatmap directly from the covariance matrix
+pheatmap(covariance_matrix,
+         cluster_rows = FALSE,  # Disable clustering for rows
+         cluster_cols = FALSE,  # Disable clustering for columns
+         display_numbers = FALSE,  # Do not display covariance values
+         color = viridis::plasma(100, direction = -1),  # Use plasma color palette
+         main = "",  # Empty title (no bold styling)
+         labels_row = rep("", nrow(covariance_matrix)),  # Empty strings for rows
+         labels_col = rep("", ncol(covariance_matrix)),  # Empty strings for columns
+         border_color = NA)  # Remove grey borders around cells
+
+# Save the heatmap as a high-resolution PDF
+pdf("covariance_matrix_heatmap.pdf", width = 10, height = 8)
+print(pheatmap(covariance_matrix,
+               cluster_rows = FALSE,  # Disable clustering for rows
+               cluster_cols = FALSE,  # Disable clustering for columns
+               display_numbers = FALSE,  # Do not display covariance values
+               color = viridis::plasma(100, direction = -1),  # Use plasma color palette
+               main = "",  # Empty title (no bold styling)
+               labels_row = rep("", nrow(covariance_matrix)),  # Empty strings for rows
+               labels_col = rep("", ncol(covariance_matrix)),  # Empty strings for columns
+               border_color = NA))  # Remove grey borders around cells
+dev.off()
+
+# NOTE:
+# The covariance matrix heatmap represents a variance-covariance matrix. This 
+# matrix considers all variables that will be used in the analysis from 
+# transformed_data_cleaned_no_COVID.
+
+################################################################################
+# Eigenvalues and Eigenvectors for Covariance Matrix
+################################################################################
+
+# Compute eigenvalues and eigenvectors for the covariance matrix
+eigen_cov <- eigen(covariance_matrix)
+eigenvalues_cov <- eigen_cov$values
+eigenvectors_cov <- eigen_cov$vectors
+
+# Print the eigenvalues and eigenvectors for reference
+print("Eigenvalues of the Covariance Matrix:")
+print(eigenvalues_cov)
+print("Eigenvectors of the Covariance Matrix:")
+print(eigenvectors_cov)
+
+################################################################################
+# Scree Plot of Eigenvalues
+################################################################################
+
+# Create the scree plot for eigenvalues
+scree_plot_eigenvalues <- ggplot(data.frame(Eigenvalue = eigenvalues_cov, Component = seq_along(eigenvalues_cov)), 
+                                 aes(x = Component, y = Eigenvalue)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Scree Plot of Eigenvalues (Covariance Matrix)", x = "Component", y = "Eigenvalue") +
+  theme_minimal()
+
+# Save the scree plot of eigenvalues as a high-resolution PDF
+ggsave("scree_plot_eigenvalues_covariance_matrix.pdf", plot = scree_plot_eigenvalues, width = 10, height = 8, dpi = 300, units = "in")
+
+################################################################################
+# Ratio Plot of Eigenvalues
+################################################################################
+
+# Number of eigenvalues
+num_eigenvalues <- length(eigenvalues_cov)
+
+# Compute eigenvalue ratios (λ_i / λ_{i+1})
+eigen_cov_difference <- numeric(num_eigenvalues - 1)  # One less than the number of eigenvalues
+
+for (i in 1:(num_eigenvalues - 1)) {
+  eigen_cov_difference[i] <- eigenvalues_cov[i] / eigenvalues_cov[i + 1]
+}
+
+# Create the eigenvalue ratio plot
+scree_plot_ratios <- ggplot(data.frame(Eigenvalues_ratios = eigen_cov_difference, Component = 1:(num_eigenvalues - 1)), 
+                            aes(x = Component, y = Eigenvalues_ratios)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Eigenvalue Ratios (Covariance Matrix)", x = "Component", y = "Eigenvalue Ratios") +
+  theme_minimal()
+
+# Save the eigenvalue ratio plot as a high-resolution PDF
+ggsave("eigenvalue_ratios_covariance_matrix.pdf", plot = scree_plot_ratios, width = 10, height = 8, dpi = 300, units = "in")
 

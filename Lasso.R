@@ -1,500 +1,125 @@
 ################################################################################
-# Lasso with lambda close to zero
+# Script Overview: Lasso Forecast with Multiple Lambda Values
 ################################################################################
 
-# Re-prepare the data with the correct shifts
-# Create vector for CPIULFSL at t+1 (represent future values)
-CPIULFSL_train <- train_data_holdout[, "CPIULFSL"]
+# Author: Alessandro Dodon
+# Last Update: 01-25-2025
+# Description:
+# This script implements Lasso regression for CPIULFSL (inflation proxy) using 
+# multiple lambdas to find the optimal regularization parameter.
 
-# Take first value out to shift every observation
-Y_train <- CPIULFSL_train[-1] # Y for Lasso
+# Dependencies:
+# - This script requires preprocessed dataset `transformed_data_cleaned_no_COVID` 
+#   already split into X_train, Y_train, X_test, Y_test.
 
-# Modify also the matrix for the training data (this took out the last value, so it is symmetric and represents the "past" values)
-train_data_holdout_no_date <- train_data_holdout[,-1]
-X_train_matrix <- head(train_data_holdout_no_date, -1)
+# Outputs:
+# - MSE values are printed in the console.
+# - A single PDF file (`actual_vs_predicted_lasso.pdf`) is saved in the same path 
+#   as the script, containing:
+#     - Actual vs. Predicted Time Series for each lambda.
+#     - MSE vs. Lambda plot.
 
-# Initialize vectors with the original training data
-Y_train_vec <- as.numeric(Y_train)
-X_train_matrix <- as.matrix(X_train_matrix)
-n_train <- length(Y_train_vec)
+# Notes:
+# - This script must be run sequentially.
+# - Additional clarifications are provided throughout the script with # NOTE: comments.
+#   For a better explanation, please refer to related slides or documentation.
 
-# Initial shifting for test data
-CPIULFSL_test <- test_data_holdout[, "CPIULFSL"]
-Y_test <- CPIULFSL_test[-1]  # Future values for test set
+################################################################################
+# Lasso 
+################################################################################
 
-test_data_holdout_no_date <- test_data_holdout[,-1]
-X_test_matrix <- head(test_data_holdout_no_date, -1)
-
-# Convert to numeric and matrix format
-Y_test_vec <- as.numeric(Y_test)
-X_test_matrix <- as.matrix(X_test_matrix)
-
-# Number of test observations
-n_test <- 239  # Adjusted to match the number of test predictions
-
-# Create vectors to store predictions
-predictions <- numeric(n_test)
-
-# Define the lambda for Lasso regression
-lambda <- 0.0001
-
-# Perform recursive rolling Lasso regression and predict the next value
-for (i in 1:n_test) {
-  # Standardize the current training data
-  mean_Y_train <- mean(Y_train_vec)
-  sd_Y_train <- sd(Y_train_vec)
-  Y_train_standardized <- (Y_train_vec - mean_Y_train) / sd_Y_train
+# Function to test multiple lambdas, save plots in a single PDF, and calculate MSE
+test_lasso_lambdas <- function(lambda_values, title_prefix, output_pdf) {
+  # Data frame to store results
+  results <- data.frame(Lambda = lambda_values, MSE = NA)
   
-  mean_X_train <- colMeans(X_train_matrix)
-  sd_X_train <- apply(X_train_matrix, 2, sd)
-  X_train_standardized <- scale(X_train_matrix, center = mean_X_train, scale = sd_X_train)
+  # Open a PDF device for saving all plots sequentially
+  pdf(output_pdf, width = 10, height = 8)
   
-  # Fit the Lasso regression model using current standardized training data
-  model <- glmnet(X_train_standardized, Y_train_standardized, alpha = 1, lambda = lambda, standardize = FALSE)
+  for (i in seq_along(lambda_values)) {
+    lambda <- lambda_values[i]
+    cat("Testing Lambda:", format(lambda, scientific = TRUE), "\n")
+    
+    # Initialize variables for recursive predictions
+    Y_train_vec <- as.numeric(Y_train)
+    X_train_matrix <- as.matrix(X_train)
+    Y_test_vec <- as.numeric(Y_test)
+    X_test_matrix <- as.matrix(X_test)
+    
+    n_test <- length(Y_test_vec)
+    predictions <- numeric(n_test) # Define length for predictions
+    
+    for (j in 1:n_test) {
+      # Standardize the current training data
+      mean_Y_train <- mean(Y_train_vec)
+      sd_Y_train <- sd(Y_train_vec)
+      Y_train_standardized <- (Y_train_vec - mean_Y_train) / sd_Y_train
+      
+      mean_X_train <- colMeans(X_train_matrix)
+      sd_X_train <- apply(X_train_matrix, 2, sd)
+      X_train_standardized <- scale(X_train_matrix, center = mean_X_train, scale = sd_X_train)
+      
+      # Fit Lasso regression
+      model <- glmnet(X_train_standardized, Y_train_standardized, alpha = 1, lambda = lambda, standardize = FALSE) # We standardize each time
+      
+      # Predict
+      new_X <- matrix(X_test_matrix[j, ], nrow = 1)  # Ensure new_X is a 1-row matrix
+      new_X <- scale(new_X, center = mean_X_train, scale = sd_X_train) 
+      prediction_standardized <- predict(model, newx = new_X) 
+      
+      # NOTE:
+      # For `glmnet`, only the column order in `newx` must match the training matrix. 
+      # Column names are optional, unlike `lm`, which requires both matching names and order.
+      
+      # De-standardize
+      prediction <- prediction_standardized * sd_Y_train + mean_Y_train
+      predictions[j] <- prediction
+      
+      # Update training data
+      actual_value <- Y_test_vec[j]
+      Y_train_vec <- c(Y_train_vec, actual_value)
+      X_train_matrix <- rbind(X_train_matrix, X_test_matrix[j, ])
+    }
+    
+    # Calculate MSE
+    test_errors <- Y_test_vec - predictions
+    mse <- mean(test_errors^2)
+    results$MSE[i] <- mse
+    
+    # Print MSE for the current lambda
+    cat(sprintf("Lambda: %s, MSE: %s\n", format(lambda, scientific = TRUE), format(mse, scientific = TRUE)))
+    
+    # Plot Actual vs Predicted for this lambda
+    df_test <- data.frame(Date = Y_test_with_date$date, Actual = Y_test_vec, Predicted = predictions)
+    
+    # Time series plot
+    time_series_plot <- ggplot(df_test, aes(x = Date)) +
+      geom_line(aes(y = Actual, color = "Actual")) +
+      geom_line(aes(y = Predicted, color = "Predicted")) +
+      labs(title = paste(title_prefix, "(Lambda =", format(lambda, scientific = TRUE), ")"),
+           x = "Date", y = "CPIULFSL", color = "Legend") +
+      theme_minimal() +
+      scale_color_manual(values = c("Actual" = "blue", "Predicted" = "red"))
+    
+    print(time_series_plot)  # Add plot to the PDF
+  }
   
-  # Use the last row of X_train_matrix for prediction
-  new_X <- scale(matrix(as.numeric(X_test_matrix[i, ]), nrow=1), center = mean_X_train, scale = sd_X_train)
-  prediction_standardized <- predict(model, newx = new_X)
+  # Plot MSE vs Lambda
+  mse_plot <- ggplot(results, aes(x = log10(Lambda), y = MSE)) +
+    geom_line() +
+    geom_point() +
+    labs(title = "MSE vs. Lambda", x = "Log10(Lambda)", y = "MSE") +
+    theme_minimal()
   
-  # De-standardize the prediction
-  prediction <- prediction_standardized * sd_Y_train + mean_Y_train
-  predictions[i] <- prediction
+  print(mse_plot)  # Add plot to the PDF
   
-  # Append the actual test value to the training data
-  actual_value <- Y_test_vec[i]
+  # Close the PDF device
+  dev.off()
   
-  # Append the actual test value to the training vectors
-  Y_train_vec <- c(Y_train_vec, actual_value)
-  X_train_matrix <- rbind(X_train_matrix, as.numeric(X_test_matrix[i, ]))
-  
-  # Debug statements to verify the size of the training data
-  cat("Iteration:", i, "\n")
-  cat("Size of Y_train_vec:", length(Y_train_vec), "\n")
-  cat("Size of X_train_matrix:", nrow(X_train_matrix), "\n")
+  return(results)
 }
 
-################################################################################
-# Confront recursive rolling Lasso predictions with actual test values
-# Extract the actual values from the test data
-actual_values <- Y_test_vec[1:n_test]  # Adjusted to match the number of predictions
-
-# Calculate prediction errors for the test set
-test_errors <- actual_values - predictions
-
-# Compute error metrics for the test set
-test_mae <- mean(abs(test_errors))
-test_mse <- mean(test_errors^2)
-test_rmse <- sqrt(test_mse)
-
-# Display the test errors and error metrics
-cat("Test Mean Absolute Error (MAE):", test_mae, "\n")
-cat("Test Mean Squared Error (MSE):", test_mse, "\n")
-cat("Test Root Mean Squared Error (RMSE):", test_rmse, "\n")
-
-# Plot actual vs predicted values for the test set
-df_test <- data.frame(Actual = actual_values, Predicted = predictions)
-ggplot(df_test, aes(x = Actual, y = Predicted)) +
-  geom_point() +
-  geom_abline(intercept = 0, slope = 1, color = "red") +
-  ggtitle("Lasso Regression with multiple variables: Test Actual vs. Predicted Values")
-
-# Residual plot for the test set
-ggplot(df_test, aes(x = Actual, y = Actual - Predicted)) +
-  geom_point() +
-  geom_hline(yintercept = 0, color = "red") +
-  ggtitle("Lasso Regression with multiple variables: Test Residuals")
-
-# Plotting actual vs predicted values for the test set
-df_test <- data.frame(Date = test_data_holdout$date[-1][1:n_test],
-                      Actual = actual_values,
-                      Predicted = predictions)
-
-# Create the time series plot
-actual_vs_predicted_plot <- ggplot(df_test, aes(x = Date)) +
-  geom_line(aes(y = Actual, color = "Actual")) +
-  geom_line(aes(y = Predicted, color = "Predicted")) +
-  labs(title = "Actual vs Predicted Values for Lasso Regression with Lambda = 0.0001",
-       x = "Date",
-       y = "CPIULFSL",
-       color = "Legend") +
-  theme_minimal() +
-  scale_color_manual(values = c("Actual" = "blue", "Predicted" = "red"))
-
-# Save the plot as a high-resolution PDF
-ggsave("actual_vs_predicted_values_lasso_lambda_0001.pdf", plot = actual_vs_predicted_plot, width = 10, height = 8, dpi = 300, units = "in")
-
-################################################################################
-# Lasso with lambda close to infinity
-################################################################################
-
-# Re-prepare the data with the correct shifts
-# Create vector for CPIULFSL at t+1 (represent future values)
-CPIULFSL_train <- train_data_holdout[, "CPIULFSL"]
-
-# Take first value out to shift every observation
-Y_train <- CPIULFSL_train[-1] # Y for Lasso
-
-# Modify also the matrix for the training data (this took out the last value, so it is symmetric and represents the "past" values)
-train_data_holdout_no_date <- train_data_holdout[,-1]
-X_train_matrix <- head(train_data_holdout_no_date, -1)
-
-# Initialize vectors with the original training data
-Y_train_vec <- as.numeric(Y_train)
-X_train_matrix <- as.matrix(X_train_matrix)
-n_train <- length(Y_train_vec)
-
-# Initial shifting for test data
-CPIULFSL_test <- test_data_holdout[, "CPIULFSL"]
-Y_test <- CPIULFSL_test[-1]  # Future values for test set
-
-test_data_holdout_no_date <- test_data_holdout[,-1]
-X_test_matrix <- head(test_data_holdout_no_date, -1)
-
-# Convert to numeric and matrix format
-Y_test_vec <- as.numeric(Y_test)
-X_test_matrix <- as.matrix(X_test_matrix)
-
-# Number of test observations
-n_test <- 239  # Adjusted to match the number of test predictions
-
-# Create vectors to store predictions
-predictions <- numeric(n_test)
-
-# Define the lambda for Lasso regression
-lambda <- 1000000
-
-# Perform recursive rolling Lasso regression and predict the next value
-for (i in 1:n_test) {
-  # Standardize the current training data
-  mean_Y_train <- mean(Y_train_vec)
-  sd_Y_train <- sd(Y_train_vec)
-  Y_train_standardized <- (Y_train_vec - mean_Y_train) / sd_Y_train
-  
-  mean_X_train <- colMeans(X_train_matrix)
-  sd_X_train <- apply(X_train_matrix, 2, sd)
-  X_train_standardized <- scale(X_train_matrix, center = mean_X_train, scale = sd_X_train)
-  
-  # Fit the Lasso regression model using current standardized training data
-  model <- glmnet(X_train_standardized, Y_train_standardized, alpha = 1, lambda = lambda, standardize = FALSE)
-  
-  # Use the last row of X_train_matrix for prediction
-  new_X <- scale(matrix(as.numeric(X_test_matrix[i, ]), nrow=1), center = mean_X_train, scale = sd_X_train)
-  prediction_standardized <- predict(model, newx = new_X)
-  
-  # De-standardize the prediction
-  prediction <- prediction_standardized * sd_Y_train + mean_Y_train
-  predictions[i] <- prediction
-  
-  # Append the actual test value to the training data
-  actual_value <- Y_test_vec[i]
-  
-  # Append the actual test value to the training vectors
-  Y_train_vec <- c(Y_train_vec, actual_value)
-  X_train_matrix <- rbind(X_train_matrix, as.numeric(X_test_matrix[i, ]))
-  
-  # Debug statements to verify the size of the training data
-  cat("Iteration:", i, "\n")
-  cat("Size of Y_train_vec:", length(Y_train_vec), "\n")
-  cat("Size of X_train_matrix:", nrow(X_train_matrix), "\n")
-}
-
-################################################################################
-# Confront recursive rolling Lasso predictions with actual test values
-# Extract the actual values from the test data
-actual_values <- Y_test_vec[1:n_test]  # Adjusted to match the number of predictions
-
-# Calculate prediction errors for the test set
-test_errors <- actual_values - predictions
-
-# Compute error metrics for the test set
-test_mae <- mean(abs(test_errors))
-test_mse <- mean(test_errors^2)
-test_rmse <- sqrt(test_mse)
-
-# Display the test errors and error metrics
-cat("Test Mean Absolute Error (MAE):", test_mae, "\n")
-cat("Test Mean Squared Error (MSE):", test_mse, "\n")
-cat("Test Root Mean Squared Error (RMSE):", test_rmse, "\n")
-
-# Plot actual vs predicted values for the test set
-df_test <- data.frame(Actual = actual_values, Predicted = predictions)
-ggplot(df_test, aes(x = Actual, y = Predicted)) +
-  geom_point() +
-  geom_abline(intercept = 0, slope = 1, color = "red") +
-  ggtitle("Lasso Regression with multiple variables: Test Actual vs. Predicted Values")
-
-# Residual plot for the test set
-ggplot(df_test, aes(x = Actual, y = Actual - Predicted)) +
-  geom_point() +
-  geom_hline(yintercept = 0, color = "red") +
-  ggtitle("Lasso Regression with multiple variables: Test Residuals")
-
-# Plotting actual vs predicted values for the test set
-df_test <- data.frame(Date = test_data_holdout$date[-1][1:n_test],
-                      Actual = actual_values,
-                      Predicted = predictions)
-
-# Create the time series plot
-actual_vs_predicted_plot <- ggplot(df_test, aes(x = Date)) +
-  geom_line(aes(y = Actual, color = "Actual")) +
-  geom_line(aes(y = Predicted, color = "Predicted")) +
-  labs(title = "Actual vs Predicted Values for Lasso Regression with Lambda = 1,000,000",
-       x = "Date",
-       y = "CPIULFSL",
-       color = "Legend") +
-  theme_minimal() +
-  scale_color_manual(values = c("Actual" = "blue", "Predicted" = "red"))
-
-# Save the plot as a high-resolution PDF
-ggsave("actual_vs_predicted_values_lasso_lambda_1000000.pdf", plot = actual_vs_predicted_plot, width = 10, height = 8, dpi = 300, units = "in")
-
-################################################################################
-# Lasso with lambda set around optimal theoretical value
-################################################################################
-
-# Re-prepare the data with the correct shifts
-# Create vector for CPIULFSL at t+1 (represent future values)
-CPIULFSL_train <- train_data_holdout[, "CPIULFSL"]
-
-# Take first value out to shift every observation
-Y_train <- CPIULFSL_train[-1] # Y for Lasso
-
-# Modify also the matrix for the training data (this took out the last value, so it is symmetric and represents the "past" values)
-train_data_holdout_no_date <- train_data_holdout[,-1]
-X_train_matrix <- head(train_data_holdout_no_date, -1)
-
-# Initialize vectors with the original training data
-Y_train_vec <- as.numeric(Y_train)
-X_train_matrix <- as.matrix(X_train_matrix)
-n_train <- length(Y_train_vec)
-
-# Initial shifting for test data
-CPIULFSL_test <- test_data_holdout[, "CPIULFSL"]
-Y_test <- CPIULFSL_test[-1]  # Future values for test set
-
-test_data_holdout_no_date <- test_data_holdout[,-1]
-X_test_matrix <- head(test_data_holdout_no_date, -1)
-
-# Convert to numeric and matrix format
-Y_test_vec <- as.numeric(Y_test)
-X_test_matrix <- as.matrix(X_test_matrix)
-
-# Number of test observations
-n_test <- 239  # Adjusted to match the number of test predictions
-
-# Create vectors to store predictions
-predictions <- numeric(n_test)
-
-# Define the lambda for Lasso regression
-lambda <- 121 / sqrt(479)
-
-# Perform recursive rolling Lasso regression and predict the next value
-for (i in 1:n_test) {
-  # Standardize the current training data
-  mean_Y_train <- mean(Y_train_vec)
-  sd_Y_train <- sd(Y_train_vec)
-  Y_train_standardized <- (Y_train_vec - mean_Y_train) / sd_Y_train
-  
-  mean_X_train <- colMeans(X_train_matrix)
-  sd_X_train <- apply(X_train_matrix, 2, sd)
-  X_train_standardized <- scale(X_train_matrix, center = mean_X_train, scale = sd_X_train)
-  
-  # Fit the Lasso regression model using current standardized training data
-  model <- glmnet(X_train_standardized, Y_train_standardized, alpha = 1, lambda = lambda, standardize = FALSE)
-  
-  # Use the last row of X_train_matrix for prediction
-  new_X <- scale(matrix(as.numeric(X_test_matrix[i, ]), nrow=1), center = mean_X_train, scale = sd_X_train)
-  prediction_standardized <- predict(model, newx = new_X)
-  
-  # De-standardize the prediction
-  prediction <- prediction_standardized * sd_Y_train + mean_Y_train
-  predictions[i] <- prediction
-  
-  # Append the actual test value to the training data
-  actual_value <- Y_test_vec[i]
-  
-  # Append the actual test value to the training vectors
-  Y_train_vec <- c(Y_train_vec, actual_value)
-  X_train_matrix <- rbind(X_train_matrix, as.numeric(X_test_matrix[i, ]))
-  
-  # Debug statements to verify the size of the training data
-  cat("Iteration:", i, "\n")
-  cat("Size of Y_train_vec:", length(Y_train_vec), "\n")
-  cat("Size of X_train_matrix:", nrow(X_train_matrix), "\n")
-}
-
-################################################################################
-# Confront recursive rolling Lasso predictions with actual test values
-# Extract the actual values from the test data
-actual_values <- Y_test_vec[1:n_test]  # Adjusted to match the number of predictions
-
-# Calculate prediction errors for the test set
-test_errors <- actual_values - predictions
-
-# Compute error metrics for the test set
-test_mae <- mean(abs(test_errors))
-test_mse <- mean(test_errors^2)
-test_rmse <- sqrt(test_mse)
-
-# Display the test errors and error metrics
-cat("Test Mean Absolute Error (MAE):", test_mae, "\n")
-cat("Test Mean Squared Error (MSE):", test_mse, "\n")
-cat("Test Root Mean Squared Error (RMSE):", test_rmse, "\n")
-
-# Plot actual vs predicted values for the test set
-df_test <- data.frame(Actual = actual_values, Predicted = predictions)
-ggplot(df_test, aes(x = Actual, y = Predicted)) +
-  geom_point() +
-  geom_abline(intercept = 0, slope = 1, color = "red") +
-  ggtitle("Lasso Regression with multiple variables: Test Actual vs. Predicted Values")
-
-# Residual plot for the test set
-ggplot(df_test, aes(x = Actual, y = Actual - Predicted)) +
-  geom_point() +
-  geom_hline(yintercept = 0, color = "red") +
-  ggtitle("Lasso Regression with multiple variables: Test Residuals")
-
-# Plotting actual vs predicted values for the test set
-df_test <- data.frame(Date = test_data_holdout$date[-1][1:n_test],
-                      Actual = actual_values,
-                      Predicted = predictions)
-
-# Create the time series plot
-actual_vs_predicted_plot <- ggplot(df_test, aes(x = Date)) +
-  geom_line(aes(y = Actual, color = "Actual")) +
-  geom_line(aes(y = Predicted, color = "Predicted")) +
-  labs(title = "Actual vs Predicted Values for Lasso Regression with Optimal Estimated Lambda",
-       x = "Date",
-       y = "CPIULFSL",
-       color = "Legend") +
-  theme_minimal() +
-  scale_color_manual(values = c("Actual" = "blue", "Predicted" = "red"))
-
-# Save the plot as a high-resolution PDF
-ggsave("actual_vs_predicted_values_lasso_optimal_lambda.pdf", plot = actual_vs_predicted_plot, width = 10, height = 8, dpi = 300, units = "in")
-
-################################################################################
-# Lasso with lambda set around optimal theoretical value (second guess)
-################################################################################
-
-# Re-prepare the data with the correct shifts
-# Create vector for CPIULFSL at t+1 (represent future values)
-CPIULFSL_train <- train_data_holdout[, "CPIULFSL"]
-
-# Take first value out to shift every observation
-Y_train <- CPIULFSL_train[-1] # Y for Lasso
-
-# Modify also the matrix for the training data (this took out the last value, so it is symmetric and represents the "past" values)
-train_data_holdout_no_date <- train_data_holdout[,-1]
-X_train_matrix <- head(train_data_holdout_no_date, -1)
-
-# Initialize vectors with the original training data
-Y_train_vec <- as.numeric(Y_train)
-X_train_matrix <- as.matrix(X_train_matrix)
-n_train <- length(Y_train_vec)
-
-# Initial shifting for test data
-CPIULFSL_test <- test_data_holdout[, "CPIULFSL"]
-Y_test <- CPIULFSL_test[-1]  # Future values for test set
-
-test_data_holdout_no_date <- test_data_holdout[,-1]
-X_test_matrix <- head(test_data_holdout_no_date, -1)
-
-# Convert to numeric and matrix format
-Y_test_vec <- as.numeric(Y_test)
-X_test_matrix <- as.matrix(X_test_matrix)
-
-# Number of test observations
-n_test <- 239  # Adjusted to match the number of test predictions
-
-# Create vectors to store predictions
-predictions <- numeric(n_test)
-
-# Define the lambda for Lasso regression
-lambda <- 0.01
-
-# Perform recursive rolling Lasso regression and predict the next value
-for (i in 1:n_test) {
-  # Standardize the current training data
-  mean_Y_train <- mean(Y_train_vec)
-  sd_Y_train <- sd(Y_train_vec)
-  Y_train_standardized <- (Y_train_vec - mean_Y_train) / sd_Y_train
-  
-  mean_X_train <- colMeans(X_train_matrix)
-  sd_X_train <- apply(X_train_matrix, 2, sd)
-  X_train_standardized <- scale(X_train_matrix, center = mean_X_train, scale = sd_X_train)
-  
-  # Fit the Lasso regression model using current standardized training data
-  model <- glmnet(X_train_standardized, Y_train_standardized, alpha = 1, lambda = lambda, standardize = FALSE)
-  
-  # Use the last row of X_train_matrix for prediction
-  new_X <- scale(matrix(as.numeric(X_test_matrix[i, ]), nrow=1), center = mean_X_train, scale = sd_X_train)
-  prediction_standardized <- predict(model, newx = new_X)
-  
-  # De-standardize the prediction
-  prediction <- prediction_standardized * sd_Y_train + mean_Y_train
-  predictions[i] <- prediction
-  
-  # Append the actual test value to the training data
-  actual_value <- Y_test_vec[i]
-  
-  # Append the actual test value to the training vectors
-  Y_train_vec <- c(Y_train_vec, actual_value)
-  X_train_matrix <- rbind(X_train_matrix, as.numeric(X_test_matrix[i, ]))
-  
-  # Debug statements to verify the size of the training data
-  cat("Iteration:", i, "\n")
-  cat("Size of Y_train_vec:", length(Y_train_vec), "\n")
-  cat("Size of X_train_matrix:", nrow(X_train_matrix), "\n")
-}
-
-################################################################################
-# Confront recursive rolling Lasso predictions with actual test values
-# Extract the actual values from the test data
-actual_values <- Y_test_vec[1:n_test]  # Adjusted to match the number of predictions
-
-# Calculate prediction errors for the test set
-test_errors <- actual_values - predictions
-
-# Compute error metrics for the test set
-test_mae <- mean(abs(test_errors))
-test_mse <- mean(test_errors^2)
-test_rmse <- sqrt(test_mse)
-
-# Display the test errors and error metrics
-cat("Test Mean Absolute Error (MAE):", test_mae, "\n")
-cat("Test Mean Squared Error (MSE):", test_mse, "\n")
-cat("Test Root Mean Squared Error (RMSE):", test_rmse, "\n")
-
-# Plot actual vs predicted values for the test set
-df_test <- data.frame(Actual = actual_values, Predicted = predictions)
-ggplot(df_test, aes(x = Actual, y = Predicted)) +
-  geom_point() +
-  geom_abline(intercept = 0, slope = 1, color = "red") +
-  ggtitle("Lasso Regression with multiple variables: Test Actual vs. Predicted Values")
-
-# Residual plot for the test set
-ggplot(df_test, aes(x = Actual, y = Actual - Predicted)) +
-  geom_point() +
-  geom_hline(yintercept = 0, color = "red") +
-  ggtitle("Lasso Regression with multiple variables: Test Residuals")
-
-# Plotting actual vs predicted values for the test set
-df_test <- data.frame(Date = test_data_holdout$date[-1][1:n_test],
-                      Actual = actual_values,
-                      Predicted = predictions)
-
-# Create the time series plot
-actual_vs_predicted_plot <- ggplot(df_test, aes(x = Date)) +
-  geom_line(aes(y = Actual, color = "Actual")) +
-  geom_line(aes(y = Predicted, color = "Predicted")) +
-  labs(title = "Actual vs Predicted Values for Lasso Model with Lambda = 0.01",
-       x = "Date",
-       y = "CPIULFSL",
-       color = "Legend") +
-  theme_minimal() +
-  scale_color_manual(values = c("Actual" = "blue", "Predicted" = "red"))
-
-# Save the plot as a high-resolution PDF
-ggsave("actual_vs_predicted_values_lasso_lambda_001.pdf", plot = actual_vs_predicted_plot, width = 10, height = 8, dpi = 300, units = "in")
+# Test multiple lambdas and save plots in a single PDF file
+lambda_values <- c(1e-6, 1e-4, 1e-3, 1e-2, 1e-1, 0, 1, 10, 100, 1000, 1000000)
+results <- test_lasso_lambdas(lambda_values, "Lasso Regression", "actual_vs_predicted_lasso.pdf")
 
