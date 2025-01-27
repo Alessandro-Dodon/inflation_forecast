@@ -2,8 +2,6 @@
 
 This updated university group project focuses on forecasting inflation using various time series techniques. The dataset (FRED-MD) is provided by the Federal Reserve Bank of St. Louis, a trusted authority in macroeconomic data.
 
-> **Note:** The code is being updated to be more precise and efficient in terms of data processing and model implementation.
-
 ## Methodology
 
 The analysis covers multiple forecasting models, with a focus on both traditional and modern machine learning techniques. The key methods used include:
@@ -40,10 +38,10 @@ The analysis covers multiple forecasting models, with a focus on both traditiona
 ### `VAR.R`
 - Implements Vector Autoregression (VAR) models, including an application of PCA to address multicollinearity issues effectively.
 
-### `RandomForest.R`
+### `RF.R`
 - Explores the use of Random Forests to capture non-linear relationships in the data.
 
-### `Report.pdf`
+### `Presentation.pdf`
 - A detailed report explaining the results, visualizations, and model comparisons.
 
 ### `current.csv`
