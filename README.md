@@ -26,7 +26,7 @@ I used a mix of traditional econometric models and modern machine learning techn
 
 **`VAR.R`** Fits VAR models, optionally using PCA preprocessing.
 
-**`RF.R`** Uses Random Forest to model inflation trends.
+**`RF.R`** Uses Random Forest to experiment with a non linear method.
 
 **`Presentation.pdf`** Set of slides explaining the methodology, results, and model comparisons.
 
