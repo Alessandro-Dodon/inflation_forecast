@@ -43,7 +43,7 @@ Below is a visualization of the Lasso Regression results from the analysis. For 
 ## User Guide
 
 1. **Setup**:
-   - Place `current.csv` in the same directory as the scripts.
+   - Place `current.csv` in the same directory as the scripts (a relative path is used).
 
 2. **Execution**:
    - Start by running `PreProcessing.R`, as all other scripts depend on the preprocessed data.
