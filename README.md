@@ -1,6 +1,6 @@
 # Inflation Forecasting with ML
 
-This updated university group project focuses on forecasting inflation using various time series techniques. The dataset FRED-MD is provided by the Federal Reserve Bank of St. Louis, a trusted authority in macroeconomic data.
+This updated university group project, completed during my Bachelor's in Economics at the University of Bologna, focuses on forecasting inflation using various time series and ML techniques. The dataset, FRED-MD, is provided by the Federal Reserve Bank of St. Louis, a trusted authority in macroeconomic data.
 
 ## Methodology
 
@@ -44,6 +44,7 @@ Below is a visualization of the Lasso Regression results from the analysis. For 
 
 1. **Setup**:
    - Place `current.csv` in the same directory as the scripts (a relative path is used).
+   - If you prefer, download the monthly dataset `current.csv` from the [FRED-MD website](https://www.stlouisfed.org/research/economists/mccracken/fred-databases).
 
 2. **Execution**:
    - Start by running `PreProcessing.R`, as all other scripts depend on the preprocessed data.
@@ -52,5 +53,6 @@ Below is a visualization of the Lasso Regression results from the analysis. For 
 3. **Packages**:
    - Uncomment the `install.packages()` lines in the scripts to install any missing R packages. The full list of required packages is provided in the `PreProcessing.R` script.
 
-4. **Dataset**:
-   - If you prefer, download the monthly dataset `current.csv` from the [FRED-MD website](https://www.stlouisfed.org/research/economists/mccracken/fred-databases).
+## Contacts
+For any clarifications, questions, or to report issues with the code, feel free to reach out via email at alessandro.dodon@usi.ch. You can also find my LinkedIn link in my GitHub bio.
+
