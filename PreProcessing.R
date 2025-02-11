@@ -1,51 +1,4 @@
 ################################################################################
-# Script Overview: Pre-Processing
-################################################################################
-
-# Author: Alessandro Dodon
-# Last Update: 01-25-2025
-# Description:
-# This script processes macroeconomic data with a focus on inflation (CPIULFSL) 
-# as the target variable. The analysis includes data cleaning, transformation, 
-# visualization, and eigenvalue analysis for future dimensionality reduction. 
-# Key plots and outputs are saved as high-resolution PDFs for reproducibility.
-
-# Requirements:
-# - This script requires R and the listed packages to be installed.
-# - Uncomment the relevant install.packages commands in the "Prepare Packages" 
-#   section to install missing packages.
-# - Ensure the dataset (current.csv) is located in the same directory as this script.
-
-# Major Sections:
-# 1. Prepare Packages: Loads all required libraries for analysis.
-# 2. Load Data: Reads and preprocesses the dataset using the fredmd function.
-# 3. Data Cleaning: Handles missing values, removes COVID-19 data, and smooths 
-#    remaining missing values using a simple moving average (SMA).
-# 4. Variable Splitting: Splits the dataset into predictors (X) and target (Y) 
-#    for training and testing.
-# 5. Variable of Interest (CPIULFSL): Visualizes inflation data through time 
-#    series and autocorrelation plots.
-# 6. Visualization of All Variables: Generates and saves plots for all variables, 
-#    including time series and autocorrelation.
-# 7. Covariance Matrix: Computes the variance-covariance matrix and visualizes it 
-#    using a heatmap created with pheatmap.
-# 8. Eigenvalue Analysis: Performs eigenvalue decomposition of the covariance 
-#    matrix, supported by scree plots and eigenvalue ratio plots.
-
-# Outputs:
-# - High-resolution visualizations, including heatmaps, time series, autocorrelation, 
-#   scree plots, and eigenvalue ratio plots, are saved in the working directory as PDFs.
-# - Cleaned dataset ready for the analysis already split into X and Y and Train and Test.
-
-# Notes:
-# - This script must be run sequentially.
-# - This script must be run first as it performs all preprocessing and prepares 
-#   the cleaned data required for further analysis. The subsequent scripts, which 
-#   contain forecasting algorithms using different models, can be executed in any order.
-# - Additional clarifications are provided throughout the script with # NOTE: comments.
-#   For a better explanation, please visit the slides.
-
-################################################################################
 # Prepare packages
 ################################################################################
 
@@ -268,9 +221,8 @@ str(original_data)
 summary(original_data)
 
 # NOTE:
-# The fredmd function handles the autocorrelation of each time series appropriately.
 # If the fbi package is installed, you can use this function directly without redefining it.
-# Using the function directly allows you to clearly observe the applied transformations.
+# Redefining the function allows you to clearly observe the applied transformations.
 
 ################################################################################
 # Describing variables in the dataset
@@ -303,11 +255,6 @@ dates_with_na_transformed_data <- transformed_data$date[na_rows_transformed_data
 # Print the dates with NA values
 print("Dates with NA values for transformed data:")
 print(dates_with_na_transformed_data)
-
-# NOTE:
-# The fbi package provides functions for handling missing values, but I handle 
-# this step manually. Similarly, while the package includes functions for removing 
-# outliers, I skip this step and instead focus on excluding the COVID period.
 
 ################################################################################
 # Counting missing values 
@@ -410,12 +357,6 @@ for (col in names(transformed_data_cleaned)) {
 # Display the cleaned dataframe
 print(transformed_data_cleaned)
 
-# NOTE: 
-# The SMA method calculates the average of the previous 'n' values in a series and 
-# uses this average to replace NA values. This helps in smoothing the data by filling 
-# in missing values based on the surrounding data points, thereby maintaining the 
-# overall trend and continuity of the data.
-
 ################################################################################
 # Re-check missing values for data transformed cleaned
 # Count and locate NAs in transformed data cleaned
@@ -446,7 +387,7 @@ Y_before_splitting <- transformed_data_cleaned_no_COVID[-1, c("date", "CPIULFSL"
 # Holdout Method for Splitting Data
 ################################################################################
 
-# Define the split date (we use around 70%)
+# Define the split date (around 70%)
 split_date <- as.Date("2000-01-01")
 
 # Split the data based on the date
@@ -633,14 +574,6 @@ plot_all_autocorrelations_pdf(original_data, "Original Data", file.path(output_d
 # Plot and save all autocorrelation plots into a single PDF for transformed data
 plot_all_autocorrelations_pdf(transformed_data, "Transformed Data", file.path(output_dir, "autocorrelation_transformed.pdf"), remove_first_lag = TRUE)
 
-# NOTE:
-# I plot original vs transformed data to do a visual check, seeing if the
-# transformation works well, considering the variable of interest first, then 
-# all the variables in the dataset, using the first 30 lags for ACF. The rest of
-# the analysis will use the dataset with no missing values, the COVID period 
-# removed, and only 121 variables. I prefer to save the plots in PDF files as this 
-# is much quicker than plotting and displaying each one in R.
-
 ################################################################################
 # Covariance Matrix (Standardized Data)
 ################################################################################
@@ -674,11 +607,6 @@ print(pheatmap(covariance_matrix,
                labels_col = rep("", ncol(covariance_matrix)),  # Empty strings for columns
                border_color = NA))  # Remove grey borders around cells
 dev.off()
-
-# NOTE:
-# The covariance matrix heatmap represents a variance-covariance matrix. This 
-# matrix considers all variables that will be used in the analysis from 
-# transformed_data_cleaned_no_COVID.
 
 ################################################################################
 # Eigenvalues and Eigenvectors for Covariance Matrix

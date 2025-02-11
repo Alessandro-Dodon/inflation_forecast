@@ -1,31 +1,5 @@
 ################################################################################
-# Script Overview: Lasso Forecast with Multiple Lambda Values
-################################################################################
-
-# Author: Alessandro Dodon
-# Last Update: 01-25-2025
-# Description:
-# This script implements Lasso regression for CPIULFSL (inflation proxy) using 
-# multiple lambdas to find the optimal regularization parameter.
-
-# Dependencies:
-# - This script requires preprocessed dataset `transformed_data_cleaned_no_COVID` 
-#   already split into X_train, Y_train, X_test, Y_test.
-
-# Outputs:
-# - MSE values are printed in the console.
-# - A single PDF file (`actual_vs_predicted_lasso.pdf`) is saved in the same path 
-#   as the script, containing:
-#     - Actual vs. Predicted Time Series for each lambda.
-#     - MSE vs. Lambda plot.
-
-# Notes:
-# - This script must be run sequentially.
-# - Additional clarifications are provided throughout the script with # NOTE: comments.
-#   For a better explanation, please refer to related slides or documentation.
-
-################################################################################
-# Lasso 
+# Lasso Function
 ################################################################################
 
 # Function to test multiple lambdas, save plots in a single PDF, and calculate MSE
@@ -120,6 +94,6 @@ test_lasso_lambdas <- function(lambda_values, title_prefix, output_pdf) {
 }
 
 # Test multiple lambdas and save plots in a single PDF file
-lambda_values <- c(1e-6, 1e-4, 1e-3, 1e-2, 1e-1, 0, 1, 10, 100, 1000, 1000000)
+lambda_values <- c(0, 1e-6, 1e-4, 1e-3, 1e-2, 1e-1, 1, 10, 100, 1000, 1000000)
 results <- test_lasso_lambdas(lambda_values, "Lasso Regression", "actual_vs_predicted_lasso.pdf")
 

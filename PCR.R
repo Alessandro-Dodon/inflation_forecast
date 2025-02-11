@@ -1,46 +1,10 @@
 ################################################################################
-# Script Overview: PCR Forecast with Logic Similar to OLS
-################################################################################
-
-# Author: Alessandro Dodon
-# Last Update: 01-26-2025
-# Description:
-# This script implements Principal Component Regression (PCR) for forecasting 
-# CPIULFSL (an inflation proxy). The PCR approach uses principal components 
-# derived from the predictors to mitigate multicollinearity and reduce dimensionality.
-
-# Dependencies:
-# - This script requires a preprocessed dataset `transformed_data_cleaned_no_COVID` 
-#   already split into X_train, Y_train, X_test, Y_test.
-# - The `pls` package is used for PCR implementation.
-
-# Outputs:
-# - MSE values for each PCR configuration (different numbers of principal components)
-#   are printed in the console.
-# - A single PDF file (`actual_vs_predicted_pcr.pdf`) is created containing plots of 
-#   actual vs. predicted values for each number of principal components.
-
-# Notes:
-# - This script must be run sequentially.
-# - Additional clarifications are provided throughout the script with # NOTE: comments.
-#   For more details, please consult the related documentation or slides.
-
-################################################################################
-# PCR Forecast 
+# PCR Function 
 ################################################################################
 
 # NOTE:
 # The `pls` package simplifies Principal Component Regression by integrating 
-# PCA and regression into one step, making it efficient for dimensionality reduction 
-# and handling multicollinearity in high-dimensional data.
-
-# Initialize vectors
-Y_train_vec <- as.numeric(Y_train)
-X_train_matrix <- as.matrix(X_train) # Full matrix of predictors
-
-Y_test_vec <- as.numeric(Y_test)
-X_test_matrix <- as.matrix(X_test)
-n_test <- length(Y_test_vec)
+# PCA and regression into one step.
 
 # Create a function to perform PCR for different numbers of principal components
 run_pcr <- function(num_pc_list) {
@@ -51,15 +15,14 @@ run_pcr <- function(num_pc_list) {
   
   # Loop over each number of principal components
   for (num_pc in num_pc_list) {
-    # Re-initialize training and test data for each configuration
+    
+    # Initialize variables for recursive predictions
     Y_train_vec <- as.numeric(Y_train)
     X_train_matrix <- as.matrix(X_train)
+    Y_test_vec <- as.numeric(Y_test)
+    X_test_matrix <- as.matrix(X_test)
     
-    # NOTE:
-    # Re-initializing training and test data ensures each PCR configuration starts independently,
-    # avoiding data contamination from prior iterations.
-    
-    # Create vectors to store predictions
+    n_test <- length(Y_test_vec)
     predictions <- numeric(n_test)
     
     for (i in 1:n_test) {

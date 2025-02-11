@@ -1,30 +1,5 @@
 ################################################################################
-# Script Overview: AR(1) and Multivariate OLS Forecast
-################################################################################
-
-# Author: Alessandro Dodon
-# Last Update: 01-25-2025
-# Description:
-# This script implements two forecasting approaches for CPIULFSL (inflation proxy):
-# 1. Autoregressive OLS (AR(1)): Uses only CPIULFSL past values.
-# 2. OLS with All Predictors: Uses all available predictors.
-
-# Dependencies:
-# - This script requires preprocessed dataset `transformed_data_cleaned_no_COVID` 
-#   already split into X_train, Y_train, X_test, Y_test.
-
-# Outputs:
-# - MSE values are printed in the console.
-# - Plots of actual vs. predicted values for each method are saved as PDFs in the
-#   same path as the script.
-
-# Notes:
-# - This script must be run sequentially.
-# - Additional clarifications are provided throughout the script with # NOTE: comments.
-#   For a better explanation, please visit the slides.
-
-################################################################################
-# AR(1) OLS Forecast
+# AR(1) OLS 
 ################################################################################
 
 # Convert to numeric vectors
@@ -99,7 +74,7 @@ ggsave("actual_vs_predicted_ols.pdf",
        plot = time_series_plot, width = 10, height = 8, dpi = 300, units = "in")
 
 ################################################################################
-# OLS with All Predictors Forecast
+# OLS with All Predictors 
 ################################################################################
 
 # Initialize vectors
@@ -176,12 +151,8 @@ time_series_plot <- ggplot(df_test, aes(x = Date)) +
 ggsave("actual_vs_predicted_ols_all.pdf", 
        plot = time_series_plot, width = 10, height = 8, dpi = 300, units = "in")
 
-# NOTE: 
-# This illustrates how `lm` can struggle with many predictors due to the 
-# "curse of dimensionality".
-
 ################################################################################
-# Historical Average (This is just a conceptual exercise regarding MSE)
+# Historical Average 
 ################################################################################
 
 # Calculate the mean of the actual values in the test set
@@ -215,5 +186,3 @@ average_time_series_plot <- ggplot(df_average, aes(x = Date)) +
 ggsave("actual_vs_predicted_average.pdf", 
        plot = average_time_series_plot, width = 10, height = 8, dpi = 300, units = "in")
 
-# NOTE: While MSE is a key metric, it doesn't capture how this method fails to 
-# understand any variation in the data, making it semi-useless despite its low MSE.

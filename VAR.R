@@ -1,34 +1,4 @@
 ################################################################################
-# Script Overview: VAR Forecast with Multiple PCA Configurations 
-################################################################################
-
-# Author: Alessandro Dodon
-# Last Update: 01-25-2025
-# Description:
-# This script implements forecasts with Vector Autoregression (VAR) models 
-# using different numbers of PCA-transformed predictors. The PCA calculation 
-# is dynamic, adapting to updated training data during recursive predictions. 
-# Performance is evaluated through MSE metrics, and visualizations are stored 
-# in single PDF files for each configuration. At the end, a comparison with a 
-# typical VAR using all variables is made.
-
-# Dependencies:
-# - Partially requires preprocessed datasets, but as VAR assumes 
-#   all variables are aligned at the same time t, some additional 
-#   pre-processing is done at the beginning of the script to ensure temporal alignment.
-
-# Outputs:
-# - MSE values printed in the console.
-# - Plots of actual vs. predicted values saved in:
-#   - `actual_vs_predicted_var_pca.pdf` (for VAR with PCA).
-#   - `actual_vs_predicted_var_all.pdf` (for VAR with all predictors).
-
-# Notes:
-# - This script must be run sequentially.
-# - Additional clarifications are provided throughout the script with # NOTE: comments.
-#   For a better explanation, please refer to related slides or documentation.
-
-################################################################################
 # Pre-Processing for VAR (X_VAR and Y_VAR to avoid conflicts)
 ################################################################################
 
@@ -86,7 +56,7 @@ Y_train_VAR <- as.numeric(Y_train_with_date_VAR[, "CPIULFSL"])
 Y_test_VAR <- as.numeric(Y_test_with_date_VAR[, "CPIULFSL"])
 
 ################################################################################
-# Function: Perform VAR with Dynamic PCA Configurations
+# VAR Function with Dynamic PCA Configurations
 ################################################################################
 
 perform_var_with_pca <- function(pc_values, output_pdf) {
@@ -161,8 +131,7 @@ perform_var_with_pca <- function(pc_values, output_pdf) {
 
 # NOTE: 
 # This script tests multiple PCA configurations, so it requires additional time 
-# to compute forecasts for each configuration. Results demonstrate how reducing 
-# dimensionality can improve efficiency and prevent overfitting.
+# to compute forecasts for each configuration. 
 
 ################################################################################
 # Run VAR with PCA Configurations
@@ -172,7 +141,7 @@ pc_values <- c(2, 3, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 75)
 perform_var_with_pca(pc_values = pc_values, output_pdf = "actual_vs_predicted_var_pca.pdf")
 
 ################################################################################
-# Function: Perform VAR with All Variables
+# VAR Function with All Variables
 ################################################################################
 
 perform_var_with_all_vars <- function(output_pdf) {
@@ -238,9 +207,8 @@ perform_var_with_all_vars <- function(output_pdf) {
 
 # NOTE: 
 # Using all predictors in the VAR can lead to overfitting and significantly longer 
-# computation times. This highlights the limitations of VAR models with high-dimensional
-# data. Running this code chunk may take a very long time (more than 30m or so, 
-# depending on your computer).
+# computation times. Running this code chunk may take a very long time (more than 
+# 30m or so, depending on your machine).
 
 ################################################################################
 # Run VAR with All Variables
