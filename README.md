@@ -30,6 +30,8 @@ I used a mix of traditional econometric models and modern machine learning techn
 
 **`Presentation.pdf`** Set of slides explaining the methodology, results, and model comparisons.
 
+**`UserGuide.pdf`** A short guide on running the scripts, modifying parameters, etc.
+
 **`current.csv`** Contains US monthly macroeconomic indicators from the Federal Reserve.
 
 
@@ -41,6 +43,8 @@ Below is a visualization of the Lasso Regression results from the analysis. For 
 
 
 ## User Guide
+
+A detailed user guide is available in `UserGuide.pdf` for more information. The process is anyway very straightforward.
 
 1. **Setup**:
    - Place `current.csv` in the same directory as the scripts (a relative path is used).
