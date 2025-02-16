@@ -575,91 +575,88 @@ plot_all_autocorrelations_pdf(original_data, "Original Data", file.path(output_d
 plot_all_autocorrelations_pdf(transformed_data, "Transformed Data", file.path(output_dir, "autocorrelation_transformed.pdf"), remove_first_lag = TRUE)
 
 ################################################################################
-# Covariance Matrix (Standardized Data)
+# Correlation Matrix 
 ################################################################################
 
-# Standardize the data (mean = 0, SD = 1)
-standardized_data <- scale(transformed_data_cleaned_no_COVID[-1])  # Exclude the 'date' column
+# Compute the correlation matrix 
+correlation_matrix <- cor(transformed_data_cleaned_no_COVID[-1], use = "complete.obs")
 
-# Compute the covariance matrix using complete observations
-covariance_matrix <- cov(standardized_data, use = "complete.obs")
-
-# Create the heatmap directly from the covariance matrix
-pheatmap(covariance_matrix,
+# Create the heatmap directly from the correlation matrix
+pheatmap(correlation_matrix,
          cluster_rows = FALSE,  # Disable clustering for rows
          cluster_cols = FALSE,  # Disable clustering for columns
-         display_numbers = FALSE,  # Do not display covariance values
+         display_numbers = FALSE,  # Do not display correlation values
          color = viridis::plasma(100, direction = -1),  # Use plasma color palette
          main = "",  # Empty title (no bold styling)
-         labels_row = rep("", nrow(covariance_matrix)),  # Empty strings for rows
-         labels_col = rep("", ncol(covariance_matrix)),  # Empty strings for columns
+         labels_row = rep("", nrow(correlation_matrix)),  # Empty strings for rows
+         labels_col = rep("", ncol(correlation_matrix)),  # Empty strings for columns
          border_color = NA)  # Remove grey borders around cells
 
 # Save the heatmap as a high-resolution PDF
-pdf("covariance_matrix_heatmap.pdf", width = 10, height = 8)
-print(pheatmap(covariance_matrix,
+pdf("correlation_matrix_heatmap.pdf", width = 10, height = 8)
+print(pheatmap(correlation_matrix,
                cluster_rows = FALSE,  # Disable clustering for rows
                cluster_cols = FALSE,  # Disable clustering for columns
-               display_numbers = FALSE,  # Do not display covariance values
+               display_numbers = FALSE,  # Do not display correlation values
                color = viridis::plasma(100, direction = -1),  # Use plasma color palette
                main = "",  # Empty title (no bold styling)
-               labels_row = rep("", nrow(covariance_matrix)),  # Empty strings for rows
-               labels_col = rep("", ncol(covariance_matrix)),  # Empty strings for columns
+               labels_row = rep("", nrow(correlation_matrix)),  # Empty strings for rows
+               labels_col = rep("", ncol(correlation_matrix)),  # Empty strings for columns
                border_color = NA))  # Remove grey borders around cells
 dev.off()
 
 ################################################################################
-# Eigenvalues and Eigenvectors for Covariance Matrix
+# Eigenvalues and Eigenvectors for Correlation Matrix
 ################################################################################
 
-# Compute eigenvalues and eigenvectors for the covariance matrix
-eigen_cov <- eigen(covariance_matrix)
-eigenvalues_cov <- eigen_cov$values
-eigenvectors_cov <- eigen_cov$vectors
+# Compute eigenvalues and eigenvectors for the correlation matrix
+eigen_corr <- eigen(correlation_matrix)
+eigenvalues_corr <- eigen_corr$values
+eigenvectors_corr <- eigen_corr$vectors
 
 # Print the eigenvalues and eigenvectors for reference
-print("Eigenvalues of the Covariance Matrix:")
-print(eigenvalues_cov)
-print("Eigenvectors of the Covariance Matrix:")
-print(eigenvectors_cov)
+print("Eigenvalues of the Correlation Matrix:")
+print(eigenvalues_corr)
+print("Eigenvectors of the Correlation Matrix:")
+print(eigenvectors_corr)
 
 ################################################################################
 # Scree Plot of Eigenvalues
 ################################################################################
 
 # Create the scree plot for eigenvalues
-scree_plot_eigenvalues <- ggplot(data.frame(Eigenvalue = eigenvalues_cov, Component = seq_along(eigenvalues_cov)), 
+scree_plot_eigenvalues <- ggplot(data.frame(Eigenvalue = eigenvalues_corr, Component = seq_along(eigenvalues_corr)), 
                                  aes(x = Component, y = Eigenvalue)) +
   geom_line() +
   geom_point() +
-  labs(title = "Scree Plot of Eigenvalues (Covariance Matrix)", x = "Component", y = "Eigenvalue") +
+  labs(title = "Scree Plot of Eigenvalues (Correlation Matrix)", x = "Component", y = "Eigenvalue") +
   theme_minimal()
 
 # Save the scree plot of eigenvalues as a high-resolution PDF
-ggsave("scree_plot_eigenvalues_covariance_matrix.pdf", plot = scree_plot_eigenvalues, width = 10, height = 8, dpi = 300, units = "in")
+ggsave("scree_plot_eigenvalues_correlation_matrix.pdf", plot = scree_plot_eigenvalues, width = 10, height = 8, dpi = 300, units = "in")
 
 ################################################################################
 # Ratio Plot of Eigenvalues
 ################################################################################
 
 # Number of eigenvalues
-num_eigenvalues <- length(eigenvalues_cov)
+num_eigenvalues <- length(eigenvalues_corr)
 
 # Compute eigenvalue ratios (λ_i / λ_{i+1})
-eigen_cov_difference <- numeric(num_eigenvalues - 1)  # One less than the number of eigenvalues
+eigen_corr_difference <- numeric(num_eigenvalues - 1)  # One less than the number of eigenvalues
 
 for (i in 1:(num_eigenvalues - 1)) {
-  eigen_cov_difference[i] <- eigenvalues_cov[i] / eigenvalues_cov[i + 1]
+  eigen_corr_difference[i] <- eigenvalues_corr[i] / eigenvalues_corr[i + 1]
 }
 
 # Create the eigenvalue ratio plot
-scree_plot_ratios <- ggplot(data.frame(Eigenvalues_ratios = eigen_cov_difference, Component = 1:(num_eigenvalues - 1)), 
+scree_plot_ratios <- ggplot(data.frame(Eigenvalues_ratios = eigen_corr_difference, Component = 1:(num_eigenvalues - 1)), 
                             aes(x = Component, y = Eigenvalues_ratios)) +
   geom_line() +
   geom_point() +
-  labs(title = "Eigenvalue Ratios (Covariance Matrix)", x = "Component", y = "Eigenvalue Ratios") +
+  labs(title = "Eigenvalue Ratios (Correlation Matrix)", x = "Component", y = "Eigenvalue Ratios") +
   theme_minimal()
 
 # Save the eigenvalue ratio plot as a high-resolution PDF
-ggsave("eigenvalue_ratios_covariance_matrix.pdf", plot = scree_plot_ratios, width = 10, height = 8, dpi = 300, units = "in")
+ggsave("eigenvalue_ratios_correlation_matrix.pdf", plot = scree_plot_ratios, width = 10, height = 8, dpi = 300, units = "in")
 
