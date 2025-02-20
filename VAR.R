@@ -26,7 +26,7 @@ X_test_with_date_VAR <- X_VAR[transformed_data_cleaned_no_COVID$date >= test_sta
 Y_train_with_date_VAR <- Y_VAR[Y_VAR$date >= train_start & Y_VAR$date <= train_end, ]
 Y_test_with_date_VAR <- Y_VAR[Y_VAR$date >= test_start & Y_VAR$date <= test_end, ]
 
-# Debugging: Print date ranges and dimensions
+# Print date ranges and dimensions
 cat("Training Data Date Range (X):\n")
 print(range(X_train_with_date_VAR$date))
 
