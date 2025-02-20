@@ -28,7 +28,6 @@ suppressWarnings(suppressMessages({
   
   library(pls)
   library(stats)
-  library(pls)
   library(glmnet)
   library(dplyr)
   library(forecast)
