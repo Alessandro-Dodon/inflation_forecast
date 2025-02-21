@@ -328,7 +328,7 @@ print("Details of NAs in transformed data cleaned:")
 print(na_details_transformed_data_cleaned)
 
 ################################################################################
-# Cleaning dataset from the last nas (we use SMA for the remaining nas)
+# Cleaning dataset from the last NAs (use SMA for the remaining NAs values)
 # Ensure transformed_data_cleaned is a dataframe
 transformed_data_cleaned <- as.data.frame(transformed_data_cleaned)
 
@@ -379,8 +379,8 @@ head(transformed_data_cleaned_no_COVID)
 ################################################################################
 
 # Define X (predictors, past values) and Y (target, future values) with the date column retained
-X_before_splitting <- transformed_data_cleaned_no_COVID[-nrow(transformed_data_cleaned_no_COVID), ]  # Remove last row for X (past values)
-Y_before_splitting <- transformed_data_cleaned_no_COVID[-1, c("date", "CPIULFSL")]  # Remove first row for Y (future values), keeping date
+X_before_splitting <- transformed_data_cleaned_no_COVID[-nrow(transformed_data_cleaned_no_COVID), ]  
+Y_before_splitting <- transformed_data_cleaned_no_COVID[-1, c("date", "CPIULFSL")]  
 
 ################################################################################
 # Holdout Method for Splitting Data
