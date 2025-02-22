@@ -94,6 +94,6 @@ test_lasso_lambdas <- function(lambda_values, title_prefix, output_pdf) {
 }
 
 # Test multiple lambdas and save plots in a single PDF file
-lambda_values <- c(0, 1e-6, 1e-4, 1e-3, 1e-2, 1e-1, 1, 10, 100, 1000, 1000000)
+lambda_values <- c(1e-6, 1e-4, 1e-3, 1e-2, 1e-1, 1, 10, 100, 1000, 1000000)
 results <- test_lasso_lambdas(lambda_values, "Lasso Regression", "actual_vs_predicted_lasso.pdf")
 
