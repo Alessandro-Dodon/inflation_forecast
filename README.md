@@ -7,7 +7,7 @@ This updated university group project, completed during my Bachelor's in Economi
 I used a mix of traditional econometric models and modern machine learning techniques to forecast inflation. These include:
 
 - **AR(1) Model**: A baseline autoregressive model for inflation trends.
-- **Lasso and Ridge Regression**: Regularization techniques to select predictors and handle multicollinearity.
+- **Lasso, Ridge and Elastic Net**: Regularization techniques to handle the curse of dimensionality.
 - **Principal Component Regression (PCR)**: Dimensionality reduction for large datasets.
 - **Vector Autoregression (VAR)**: Captures relationships between inflation and other macroeconomic indicators.
 - **Random Forest (RF)**: Models non-linear patterns in the data.
@@ -21,6 +21,8 @@ I used a mix of traditional econometric models and modern machine learning techn
 **`Lasso.R`** Fits a Lasso regression model with tuned regularization parameters.
 
 **`Ridge.R`** Applies Ridge regression following the same logic.
+
+**`ElasticNet.R`** Combines L1 and L2 regularization.
 
 **`PCR.R`** Performs Principal Component Regression, optimizing the number of principal components.
 
