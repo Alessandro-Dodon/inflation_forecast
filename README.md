@@ -22,6 +22,8 @@ I used a mix of traditional econometric models and modern machine learning techn
 
 **`Ridge.R`** Applies Ridge regression following the same logic.
 
+**`ElasticNet.R`** Combines L1 and L2 regularization.
+
 **`PCR.R`** Performs Principal Component Regression, optimizing the number of principal components.
 
 **`VAR.R`** Fits VAR models, optionally using PCA preprocessing.
