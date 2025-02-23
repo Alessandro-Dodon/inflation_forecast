@@ -49,20 +49,15 @@ Below is a visualization of the Lasso Regression results from the analysis. For 
 A detailed user guide is available in `UserGuide.pdf` for more information. The process is anyway very straightforward.
 
 1. **Setup**:
-   - Place `current.csv` in the same directory as the scripts (a relative path is used).
-   - If you prefer, download the monthly dataset `current.csv` from the [FRED-MD website](https://www.stlouisfed.org/research/economists/mccracken/fred-databases).
-1. **Setup**:
-   - **Clone the repository (Recommended)**:  
+   - Clone the repository (Recommended):  
      ```bash
      git clone https://github.com/Alessandro-Dodon/InflationForecast.git
      cd InflationForecast
      ```
-   - **Download as ZIP**:  
+   - Download as ZIP (Alternative:  
      Click the **"Code"** button (green) at the top of the repository page, select **"Download ZIP"**, extract the files, and place them in your working directory.  
-   - Make sure to place `current.csv` in the same directory as the scripts (a relative path is used).  
+   - Make sure to keep `current.csv` in the same directory as the scripts (a relative path is used).  
    - If you prefer, download the monthly dataset `current.csv` from the [FRED-MD website](https://www.stlouisfed.org/research/economists/mccracken/fred-databases).  
-
-
 
 2. **Execution**:
    - Start by running `PreProcessing.R`, as all other scripts depend on the preprocessed data.
