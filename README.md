@@ -51,6 +51,19 @@ A detailed user guide is available in `UserGuide.pdf` for more information. The 
 1. **Setup**:
    - Place `current.csv` in the same directory as the scripts (a relative path is used).
    - If you prefer, download the monthly dataset `current.csv` from the [FRED-MD website](https://www.stlouisfed.org/research/economists/mccracken/fred-databases).
+1. **Setup**:
+   - Place `current.csv` in the same directory as the scripts (a relative path is used).
+   - If you prefer, download the monthly dataset `current.csv` from the [FRED-MD website](https://www.stlouisfed.org/research/economists/mccracken/fred-databases).
+   - Get the repository using one of the following methods:
+     - **Clone the repository (Recommended)**:
+       ```bash
+       git clone https://github.com/Alessandro-Dodon/InflationForecast.git
+       cd InflationForecast
+       ```
+     - **Download as ZIP**:
+       1. Click the **"Code"** button (green) at the top of the repository page.
+       2. Select **"Download ZIP"**, extract the files, and place them in your working directory.
+
 
 2. **Execution**:
    - Start by running `PreProcessing.R`, as all other scripts depend on the preprocessed data.
