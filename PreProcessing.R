@@ -433,8 +433,14 @@ cat("\nTest Data Dimensions:\n")
 print(dim(X_test))
 cat(length(Y_test), "\n")  # Check length of Y_test
 
+# Note:  
+# To analyze a different target variable, use the Find and Replace function in R.  
+# Click on the magnifying glass icon, type CPIULFSL in "Find", enter the desired 
+# variable in "Replace" (e.g., INDPRO for industrial production), and click "All".
+# Then run any desired model.
+
 ################################################################################
-# View variable of interest (CPIULFSL, target inflation variable)
+# View variable of interest (CPIULFSL)
 ################################################################################
 
 # Extract the full column for CPIULFSL
@@ -658,4 +664,19 @@ scree_plot_ratios <- ggplot(data.frame(Eigenvalues_ratios = eigen_corr_differenc
 
 # Save the eigenvalue ratio plot as a high-resolution PDF
 ggsave("eigenvalue_ratios_correlation_matrix.pdf", plot = scree_plot_ratios, width = 10, height = 8, dpi = 300, units = "in")
+
+################################################################################
+# Cumulative Explained Variance using PCA
+################################################################################
+
+# Perform PCA on the correlation matrix
+pca_result <- prcomp(correlation_matrix, scale. = TRUE)
+
+# Compute cumulative proportion of variance explained (convert to %)
+explained_variance <- (pca_result$sdev^2 / sum(pca_result$sdev^2)) * 100
+cumulative_variance <- cumsum(explained_variance)
+
+# Print cumulative explained variance as percentages
+print("Cumulative Explained Variance (%):")
+print(cumulative_variance)
 
