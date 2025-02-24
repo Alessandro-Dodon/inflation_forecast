@@ -666,17 +666,15 @@ scree_plot_ratios <- ggplot(data.frame(Eigenvalues_ratios = eigen_corr_differenc
 ggsave("eigenvalue_ratios_correlation_matrix.pdf", plot = scree_plot_ratios, width = 10, height = 8, dpi = 300, units = "in")
 
 ################################################################################
-# Cumulative Explained Variance using PCA
+# Cumulative Explained Variance using Eigenvalues
 ################################################################################
 
-# Perform PCA on the correlation matrix
-pca_result <- prcomp(correlation_matrix, scale. = TRUE)
+# Compute explained variance as a percentage
+explained_variance <- (eigenvalues_corr / sum(eigenvalues_corr)) * 100
 
-# Compute cumulative proportion of variance explained (convert to %)
-explained_variance <- (pca_result$sdev^2 / sum(pca_result$sdev^2)) * 100
+# Compute cumulative explained variance
 cumulative_variance <- cumsum(explained_variance)
 
 # Print cumulative explained variance as percentages
 print("Cumulative Explained Variance (%):")
 print(cumulative_variance)
-
