@@ -1,5 +1,5 @@
 ################################################################################
-# AR(1) OLS 
+# AR(1) 
 ################################################################################
 
 # Convert to numeric vectors
@@ -47,6 +47,9 @@ for (i in 1:n_test) {
   
   cat("Iteration:", i, "\n")
 }
+
+# NOTE: Since we are using only vectors in this case, column names are not necessary.  
+# The dimension automatically matches, making column name specification trivial.
 
 ################################################################################
 # Evaluate and Visualize Results
@@ -125,6 +128,7 @@ for (i in 1:n_test) {
 # NOTE:
 # Prediction with `lm` requires both column order and column names to match 
 # between the predictors in the test data and the training data.
+# In a multiple regression setting, this must be explicit to avoid errors.
 
 ################################################################################
 # Evaluate and Visualize Results for All Predictors
