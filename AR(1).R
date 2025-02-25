@@ -48,7 +48,8 @@ for (i in 1:n_test) {
   cat("Iteration:", i, "\n")
 }
 
-# NOTE: Since we are using only vectors in this case, column names are not necessary.  
+# NOTE: 
+# Since we are using only vectors in this case, column names are not necessary.  
 # The dimension automatically matches, making column name specification trivial.
 
 ################################################################################

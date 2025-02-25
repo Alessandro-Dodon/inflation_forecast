@@ -433,7 +433,7 @@ cat("\nTest Data Dimensions:\n")
 print(dim(X_test))
 cat(length(Y_test), "\n")  # Check length of Y_test
 
-# Note:  
+# NOTE:  
 # To analyze a different target variable, use the Find and Replace function in R.  
 # Click on the magnifying glass icon, type CPIULFSL in "Find", enter the desired 
 # variable in "Replace" (e.g., INDPRO for industrial production), and click "All".
