@@ -4,11 +4,11 @@
 
 # Convert to numeric vectors
 Y_train_vec <- as.numeric(Y_train) # Y is already defined, just need to convert it to numeric vector
-X_train_vec <- as.numeric(X_train[, "CPIULFSL"]) # Extracts vector from the matrix, this is inflation lagged 
+X_train_vec <- as.numeric(X_train[, "CPIULFSL"]) # Change to select another variable of interest
 n_train <- length(Y_train_vec)
 
 Y_test_vec <- as.numeric(Y_test)
-X_test_vec <- as.numeric(X_test[, "CPIULFSL"])
+X_test_vec <- as.numeric(X_test[, "CPIULFSL"]) # Change to select another variable of interest
 n_test <- length(Y_test_vec)
 
 # Create vectors to store predictions
