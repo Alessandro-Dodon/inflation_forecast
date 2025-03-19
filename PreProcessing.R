@@ -380,7 +380,7 @@ head(transformed_data_cleaned_no_COVID)
 
 # Define X (predictors, past values) and Y (target, future values) with the date column retained
 X_before_splitting <- transformed_data_cleaned_no_COVID[-nrow(transformed_data_cleaned_no_COVID), ]  
-Y_before_splitting <- transformed_data_cleaned_no_COVID[-1, c("date", "CPIULFSL")]  
+Y_before_splitting <- transformed_data_cleaned_no_COVID[-1, c("date", "CPIULFSL")] # <----------- Change here
 
 ################################################################################
 # Holdout Method for Splitting Data
@@ -402,10 +402,10 @@ Y_test_with_date <- Y_before_splitting[test_indices, ]
 
 # Remove the date column after splitting for X and Y
 X_train <- X_train_with_date[, -1]  # Remove the date column
-Y_train <- Y_train_with_date[, "CPIULFSL"]
+Y_train <- Y_train_with_date[, "CPIULFSL"] # <----------- Change here
 
 X_test <- X_test_with_date[, -1]  # Remove the date column
-Y_test <- Y_test_with_date[, "CPIULFSL"]
+Y_test <- Y_test_with_date[, "CPIULFSL"] # <----------- Change here
 
 ################################################################################
 # Verify the split
@@ -453,10 +453,10 @@ head(cpi_column)
 print(fredmd_description[120,])
 
 ################################################################################
-# Function to create a plot for variable of interest (CPIULFSL)
+# Function to create a plot for variable of interest (CPIULFSL) 
 ################################################################################
 
-plot_variable <- function(data, var_name, title_suffix) {
+plot_variable <- function(data, var_name, title_suffix) { 
   # Use backticks to handle special characters in column names
   ggplot(data, aes_string(x = "date", y = paste0("`", var_name, "`"))) +
     geom_line() +

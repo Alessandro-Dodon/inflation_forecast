@@ -4,11 +4,11 @@
 
 # Convert to numeric vectors
 Y_train_vec <- as.numeric(Y_train) # Y is already defined, just need to convert it to numeric vector
-X_train_vec <- as.numeric(X_train[, "CPIULFSL"]) # Change to select another variable of interest
+X_train_vec <- as.numeric(X_train[, "CPIULFSL"]) # <----------- Change here 
 n_train <- length(Y_train_vec)
 
 Y_test_vec <- as.numeric(Y_test)
-X_test_vec <- as.numeric(X_test[, "CPIULFSL"]) # Change to select another variable of interest
+X_test_vec <- as.numeric(X_test[, "CPIULFSL"]) # <----------- Change here 
 n_test <- length(Y_test_vec)
 
 # Create vectors to store predictions
