@@ -41,7 +41,7 @@ I used a mix of traditional econometric models and modern machine learning techn
 
 Below is a visualization of the Lasso Regression results from the analysis. For further details and insights, please refer to the presentation slides.
 
-![Lasso Results](LassoResults.png)
+![Lasso Results](lasso_results.png)
 
 
 ## User Guide
