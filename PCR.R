@@ -26,7 +26,7 @@ run_pcr <- function(num_pc_list) {
     predictions <- numeric(n_test)
     
     for (i in 1:n_test) {
-      # Standardize the current training data
+      # Standardize current training data
       mean_Y_train <- mean(Y_train_vec)
       sd_Y_train <- sd(Y_train_vec)
       Y_train_standardized <- (Y_train_vec - mean_Y_train) / sd_Y_train
