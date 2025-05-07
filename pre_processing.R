@@ -42,7 +42,7 @@
 #install.packages("pheatmap")
 
 # Install fbi package from github
-#devtools::install_github("cykbennie/fbi")
+#devtools::install_github("cykbennie/fbi") 
 
 # Load packages quietly
 suppressWarnings(suppressMessages({
@@ -59,7 +59,7 @@ suppressWarnings(suppressMessages({
   library(ggplot2)
   library(reshape2)
   library(viridis)
-  library(fbi)
+  library(fbi) # <----- fbi package from github
   library(utils)
   library(imputeTS)
   library(randomForest)
@@ -69,7 +69,7 @@ suppressWarnings(suppressMessages({
 }))
 
 ################################################################################
-# Start by loading the monthly data and defining the fredmd function 
+# Start by loading the monthly data 
 ################################################################################
 
 # Set wd and load dataset
