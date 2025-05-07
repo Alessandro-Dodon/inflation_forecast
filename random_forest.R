@@ -1,4 +1,27 @@
 ################################################################################
+#                             Random Forest Forecasting                        #
+################################################################################
+# Script Name:        random_forest.R
+# Author:             Alessandro Dodon
+# Last Modified:      2025-05-07
+#
+# Description:        Performs recursive one-step-ahead forecasts using Random Forest 
+#                     with multiple configurations of tree count and maximum depth. 
+#                     Saves actual vs predicted plots for each configuration.
+#
+# Input Data:         Requires output objects from 'pre_processing.R'
+# Output:             Forecast evaluation metrics printed to console;
+#                     all plots saved in a single PDF file in the relative directory
+#
+# Usage:              Run 'pre_processing.R' first to prepare the data.
+#                     Then run this script to evaluate RF forecasts using varying
+#                     combinations of number of trees and max nodes.
+#
+# Dependencies:       All necessary packages are loaded in 'pre_processing.R'
+#
+# Further Reference:  See the associated presentation slides and user guide in the GitHub repo.
+
+################################################################################
 # RF Function
 ################################################################################
 

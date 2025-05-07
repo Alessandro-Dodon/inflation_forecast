@@ -1,4 +1,27 @@
 ################################################################################
+#                                OLS Forecasting                               #
+################################################################################
+# Script Name:        ar1.R
+# Author:             Alessandro Dodon
+# Last Modified:      2025-05-07
+#
+# Description:        Recursive one-step-ahead forecasts for inflation using:
+#                     - AR(1) model
+#                     - OLS with all predictors
+#                     - Historical average benchmark
+#
+# Input Data:         Requires output objects from 'pre_processing.R'
+# Output:             Forecast evaluation metrics printed to console; plots saved as PDFs
+#
+# Usage:              Run 'pre_processing.R' first to prepare data.
+#                     Then run this script sequentially. Forecast results and plots 
+#                     will be saved in the relative directory.
+#
+# Dependencies:       All necessary packages are loaded in 'pre_processing.R'
+#
+# Further Reference:  See the associated presentation slides and user guide in the GitHub repo.
+
+################################################################################
 # AR(1) 
 ################################################################################
 

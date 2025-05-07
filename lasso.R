@@ -1,4 +1,27 @@
 ################################################################################
+#                               Lasso Forecasting                              #
+################################################################################
+# Script Name:        lasso.R
+# Author:             Alessandro Dodon
+# Last Modified:      2025-05-07
+#
+# Description:        Performs recursive one-step-ahead forecasts using Lasso 
+#                     regression with a grid of lambda values. Generates plots 
+#                     for predicted vs actual series and MSE vs lambda.
+#
+# Input Data:         Requires output objects from 'pre_processing.R'
+# Output:             Forecast evaluation metrics printed to console;
+#                     plots saved as a single PDF file in the relative directory
+#
+# Usage:              Run 'pre_processing.R' first to prepare the data.
+#                     Then run this script to evaluate Lasso forecasts for 
+#                     multiple lambda values.
+#
+# Dependencies:       All necessary packages are loaded in 'pre_processing.R'
+#
+# Further Reference:  See the associated presentation slides and user guide in the GitHub repo.
+
+################################################################################
 # Lasso Function
 ################################################################################
 

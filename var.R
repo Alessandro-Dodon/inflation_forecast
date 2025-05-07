@@ -1,4 +1,31 @@
 ################################################################################
+#                               VAR Forecasting                                #
+################################################################################
+# Script Name:        var.R
+# Author:             Alessandro Dodon
+# Last Modified:      2025-05-07
+#
+# Description:        Performs recursive one-step-ahead forecasts using Vector 
+#                     Autoregression (VAR), with and without PCA-based dimensionality 
+#                     reduction. Evaluates different numbers of principal components 
+#                     and also runs a full-variable VAR.
+#
+# Input Data:         Requires output objects from 'pre_processing.R'
+#                     Additional pre-processing is performed at the beginning 
+#                     of this script, specifically tailored for VAR setup.
+#
+# Output:             Forecast evaluation metrics printed to console;
+#                     plots saved in PDF files in the relative directory
+#
+# Usage:              Run 'pre_processing.R' first to prepare the data.
+#                     Then run this script to evaluate VAR forecasts using both 
+#                     PCA-transformed and full sets of predictors.
+#
+# Dependencies:       All necessary packages are loaded in 'pre_processing.R'
+#
+# Further Reference:  See the associated presentation slides and user guide in the GitHub repo.
+
+################################################################################
 # Pre-Processing for VAR (X_VAR and Y_VAR to avoid conflicts)
 ################################################################################
 

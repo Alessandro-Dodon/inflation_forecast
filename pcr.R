@@ -1,4 +1,27 @@
 ################################################################################
+#                            Principal Component Regression                    #
+################################################################################
+# Script Name:        pcr.R
+# Author:             Alessandro Dodon
+# Last Modified:      2025-05-07
+#
+# Description:        Performs recursive one-step-ahead forecasts using Principal 
+#                     Component Regression (PCR) with different numbers of components. 
+#                     Generates actual vs predicted plots for each configuration.
+#
+# Input Data:         Requires output objects from 'pre_processing.R'
+# Output:             Forecast evaluation metrics printed to console;
+#                     all plots saved in a single PDF file in the relative directory
+#
+# Usage:              Run 'pre_processing.R' first to prepare the data.
+#                     Then run this script to evaluate PCR forecasts across 
+#                     multiple numbers of principal components.
+#
+# Dependencies:       All necessary packages are loaded in 'pre_processing.R'
+#
+# Further Reference:  See the associated presentation slides and user guide in the GitHub repo.
+
+################################################################################
 # PCR Function 
 ################################################################################
 

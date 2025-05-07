@@ -1,4 +1,27 @@
 ################################################################################
+#                            Elastic Net Forecasting                           #
+################################################################################
+# Script Name:        elastic_net.R
+# Author:             Alessandro Dodon
+# Last Modified:      2025-05-07
+#
+# Description:        Performs recursive one-step-ahead forecasts using Elastic Net 
+#                     regression across a grid of lambda and alpha values. Generates 
+#                     actual vs predicted plots and a combined MSE vs lambda/alpha plot.
+#
+# Input Data:         Requires output objects from 'pre_processing.R'
+# Output:             Forecast evaluation metrics printed to console;
+#                     plots saved as a single PDF file in the relative directory
+#
+# Usage:              Run 'pre_processing.R' first to prepare the data.
+#                     Then run this script to evaluate Elastic Net forecasts 
+#                     across all (alpha, lambda) combinations.
+#
+# Dependencies:       All necessary packages are loaded in 'pre_processing.R'
+#
+# Further Reference:  See the associated presentation slides and user guide in the GitHub repo.
+
+################################################################################
 # Elastic Net Function 
 ################################################################################
 
