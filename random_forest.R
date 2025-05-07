@@ -1,6 +1,7 @@
 ################################################################################
-#                             Random Forest Forecasting                        #
+#                             Random Forest Forecasting                        
 ################################################################################
+
 # Script Name:        random_forest.R
 # Author:             Alessandro Dodon
 # Last Modified:      2025-05-07

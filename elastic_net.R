@@ -1,6 +1,7 @@
 ################################################################################
-#                            Elastic Net Forecasting                           #
+#                            Elastic Net Forecasting                           
 ################################################################################
+
 # Script Name:        elastic_net.R
 # Author:             Alessandro Dodon
 # Last Modified:      2025-05-07

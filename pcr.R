@@ -1,6 +1,7 @@
 ################################################################################
-#                            Principal Component Regression                    #
+#                            Principal Component Regression                    
 ################################################################################
+
 # Script Name:        pcr.R
 # Author:             Alessandro Dodon
 # Last Modified:      2025-05-07
