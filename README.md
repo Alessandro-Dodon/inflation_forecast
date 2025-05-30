@@ -67,6 +67,6 @@ A detailed user guide is available in `user_guide.pdf` for more information. The
 3. **Packages**:
    - Uncomment the `install.packages()` lines in the scripts to install any missing R packages. The full list of required packages is provided in the `pre_processing.R` script.
 
-## Contacts
+## Contact
 For any clarifications, questions, or to report issues with the code, feel free to reach out via email at alessandro.dodon@usi.ch. You can also find my LinkedIn link in my GitHub bio.
 
