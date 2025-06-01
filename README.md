@@ -51,8 +51,8 @@ A detailed user guide is available in `user_guide.pdf` for more information. The
 1. **Setup**:
    - Clone the repository (Recommended):  
      ```bash
-     git clone https://github.com/Alessandro-Dodon/InflationForecast.git
-     cd InflationForecast
+     git clone https://github.com/Alessandro-Dodon/inflation_forecast  
+     cd inflation_forecast  
      ```
    - Download as ZIP (Alternative):  
      Click the **"Code"** button (green) at the top of the repository page, select **"Download ZIP"**, extract the files, and place them in your working directory.  
